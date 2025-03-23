@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Details - SGameTune</title>
+    <meta name="description" content="Play the best online games at SGameTune. No downloads required.">
+    <link rel="canonical" href="https://sgametune.com/game.html">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-container">
+            <div class="logo">
+                <img src="images/logo.svg" alt="SGameTune Logo">
+                <a href="/" class="logo-text">SGameTune</a>
+            </div>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search for games">
+            </div>
+            
+            <div class="user-actions">
+                <a href="#"><i class="fas fa-user"></i></a>
+                <a href="#"><i class="fas fa-bell"></i></a>
+                <a href="#"><i class="fas fa-heart"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="game-detail-container">
+            <!-- Game Content -->
+            <div class="game-content">
+                <div class="game-frame-container">
+                    <iframe id="game-frame" class="game-frame" src="" frameborder="0" allow="gamepad *;" allowfullscreen></iframe>
+                </div>
+                <div class="game-description">
+                    <h1 id="game-title">Game Title</h1>
+                    <div class="game-meta">
+                        <div class="game-meta-item">
+                            <i class="fas fa-gamepad"></i>
+                            <span id="game-category">Category</span>
+                        </div>
+                        <div class="game-meta-item">
+                            <i class="fas fa-star"></i>
+                            <span id="game-rating">Rating: 4.5/5</span>
+                        </div>
+                        <div class="game-meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span id="game-date">Added: March 2025</span>
+                        </div>
+                    </div>
+                    <p id="game-desc">Game description will be loaded here.</p>
+                    
+                    <div class="game-instructions">
+                        <h2>How to Play</h2>
+                        <p id="game-instructions">Instructions will be loaded here.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Related Games -->
+            <div class="related-games">
+                <h2>Related Games</h2>
+                <div id="related-games-container">
+                    <!-- Related games will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="images/logo.svg" alt="SGameTune Logo">
+                <span>SGameTune</span>
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h3>About</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Careers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SGameTune. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/games.js"></script>
+    <script>
+        // Get game ID from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameId = urlParams.get('id');
+        
+        // Load game details when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGameDetails(gameId);
+        });
+    </script>
+</body>
+</html>
