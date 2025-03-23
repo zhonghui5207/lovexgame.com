@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分类管理 - LovexGames 管理后台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin-page">
+    <div class="admin-sidebar">
+        <div class="admin-logo">
+            <img src="../images/logo.svg" alt="LovexGames Logo">
+            <h2>LovexGames</h2>
+        </div>
+        <nav class="admin-nav">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-gamepad"></i> 游戏管理</a></li>
+                <li class="active"><a href="categories.html"><i class="fas fa-tags"></i> 分类管理</a></li>
+                <li><a href="import.html"><i class="fas fa-file-import"></i> 批量导入</a></li>
+                <li><a href="settings.html"><i class="fas fa-cog"></i> 网站设置</a></li>
+                <li class="logout"><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> 退出登录</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="admin-content">
+        <header class="admin-header">
+            <h1>分类管理</h1>
+            <div class="admin-actions">
+                <button id="add-category-btn" class="primary-btn"><i class="fas fa-plus"></i> 添加分类</button>
+            </div>
+        </header>
+        <main class="admin-main">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>分类列表</h2>
+                </div>
+                <div class="admin-card-body">
+                    <table class="admin-table" id="categories-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>分类名称</th>
+                                <th>颜色</th>
+                                <th>游戏数量</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categories-list">
+                            <!-- 分类列表将通过JavaScript动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 添加/编辑分类模态框 -->
+    <div class="modal" id="category-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="category-modal-title">添加新分类</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="category-form">
+                    <input type="hidden" id="category-id">
+                    <div class="form-group">
+                        <label for="category-name">分类名称</label>
+                        <input type="text" id="category-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category-color">分类颜色</label>
+                        <input type="color" id="category-color" name="color" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="secondary-btn" id="cancel-category">取消</button>
+                        <button type="submit" class="primary-btn">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认模态框 -->
+    <div class="modal" id="delete-category-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>确认删除</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>您确定要删除分类 "<span id="delete-category-name"></span>" 吗？此操作无法撤销。</p>
+                <p class="warning"><i class="fas fa-exclamation-triangle"></i> 注意：删除分类会导致该分类下的所有游戏变为"未分类"状态。</p>
+                <div class="form-actions">
+                    <button type="button" class="secondary-btn" id="cancel-delete-category">取消</button>
+                    <button type="button" class="danger-btn" id="confirm-delete-category">删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html>

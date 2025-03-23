@@ -234,14 +234,16 @@ body {
 
 .game-frame-container {
   position: relative;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
-  background-color: #000;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  background-color: var(--card-bg);
+  margin-bottom: 20px;
+  height: 500px; /* 固定高度，避免画面异常大 */
 }
 
 .game-frame {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   border: none;
@@ -465,6 +467,111 @@ body {
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.9rem;
   margin: 0;
+}
+
+/* Game Loading and Error Overlays */
+.game-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(26, 27, 38, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 8px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(121, 87, 243, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--accent-color);
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.game-loading-overlay p {
+  color: var(--primary-text);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.connection-error-dialog {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(26, 27, 38, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.error-icon {
+  margin-bottom: 15px;
+}
+
+.connection-error-dialog h3 {
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: var(--primary-text);
+}
+
+.connection-error-dialog p {
+  color: var(--secondary-text);
+  margin-bottom: 20px;
+  max-width: 80%;
+  line-height: 1.5;
+}
+
+.error-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.error-buttons button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.offline-button {
+  background-color: transparent;
+  border: 1px solid var(--accent-color) !important;
+  color: var(--primary-text);
+}
+
+.offline-button:hover {
+  background-color: rgba(121, 87, 243, 0.1);
+}
+
+.reload-button {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.reload-button:hover {
+  background-color: var(--accent-hover);
 }
 
 /* Responsive Design */

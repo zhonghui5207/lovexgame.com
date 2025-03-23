@@ -5,7 +5,7 @@ const featuredGames = [
     title: "Doors Online",
     description: "A thrilling multiplayer horror game inspired by the popular Roblox experience.",
     embedUrl: "https://www.crazygames.com/embed/doors-online",
-    thumbnailUrl: "https://images.crazygames.com/doors-online.png",
+    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Doors+Online",
     category: "Horror",
     rating: 4.7,
     dateAdded: "March 2025",
@@ -21,7 +21,7 @@ const popularGames = [
     title: "Ragdoll Archers",
     description: "Compete in archery battles with hilarious ragdoll physics.",
     embedUrl: "https://www.crazygames.com/embed/ragdoll-archers",
-    thumbnailUrl: "https://images.crazygames.com/ragdoll-archers.png",
+    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Ragdoll+Archers",
     category: "Action",
     rating: 4.5,
     dateAdded: "March 2025",
@@ -34,7 +34,7 @@ const popularGames = [
     title: "Subway Surfers",
     description: "Run as fast as you can through the subway in this endless runner game.",
     embedUrl: "https://www.crazygames.com/embed/subway-surfers",
-    thumbnailUrl: "https://images.crazygames.com/games/subway-surfers/cover-1586889953372.png",
+    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Subway+Surfers",
     category: "Action",
     rating: 4.8,
     dateAdded: "February 2025",
@@ -47,20 +47,20 @@ const popularGames = [
     title: "Farm Merge Valley",
     description: "Build and expand your farm by merging similar items in this relaxing game.",
     embedUrl: "https://www.crazygames.com/embed/farm-merge-valley",
-    thumbnailUrl: "https://images.crazygames.com/farm-merge-valley.png",
+    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Farm+Merge+Valley",
     category: "Puzzle",
-    rating: 4.6,
-    dateAdded: "January 2025",
-    instructions: "Drag and drop similar items to merge them into upgraded versions. Build and expand your farm to unlock new items and areas.",
+    rating: 4.4,
+    dateAdded: "February 2025",
+    instructions: "Click and drag similar items to merge them into higher-level items. Manage your resources efficiently to expand your farm.",
     isFeatured: false,
-    isNew: true
+    isNew: false
   },
   {
     id: 'bloxd-io',
     title: "Bloxd.io",
     description: "A multiplayer block-building and survival game similar to Minecraft.",
     embedUrl: "https://www.crazygames.com/embed/bloxdio",
-    thumbnailUrl: "https://images.crazygames.com/bloxd-io.png",
+    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Bloxd.io",
     category: "Adventure",
     rating: 4.7,
     dateAdded: "December 2024",
@@ -73,7 +73,7 @@ const popularGames = [
     title: "Slice Master",
     description: "Test your precision by slicing through stacked objects in this satisfying game.",
     embedUrl: "https://www.crazygames.com/embed/slice-master",
-    thumbnailUrl: "https://images.crazygames.com/slice-master.png",
+    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Slice+Master",
     category: "Puzzle",
     rating: 4.4,
     dateAdded: "February 2025",
@@ -89,7 +89,7 @@ const newGames = [
     title: "Farm Merge Valley",
     description: "Build and expand your farm by merging similar items in this relaxing game.",
     embedUrl: "https://www.crazygames.com/embed/farm-merge-valley",
-    thumbnailUrl: "https://images.crazygames.com/farm-merge-valley.png",
+    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Farm+Merge+Valley",
     category: "Puzzle",
     rating: 4.6,
     dateAdded: "March 2025",
@@ -102,7 +102,7 @@ const newGames = [
     title: "Pirates of the Caribbean",
     description: "Set sail on the high seas in this adventure game based on the popular movie franchise.",
     embedUrl: "https://www.crazygames.com/embed/pirates-of-the-caribbean",
-    thumbnailUrl: "https://images.crazygames.com/pirates-of-the-caribbean.png",
+    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Pirates+of+the+Caribbean",
     category: "Adventure",
     rating: 4.5,
     dateAdded: "March 2025",
@@ -115,7 +115,7 @@ const newGames = [
     title: "Tower Defense",
     description: "Strategically place towers to defend against waves of enemies in this classic game.",
     embedUrl: "https://www.crazygames.com/embed/tower-defense",
-    thumbnailUrl: "https://images.crazygames.com/tower-defense.png",
+    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Tower+Defense",
     category: "Strategy",
     rating: 4.3,
     dateAdded: "March 2025",
@@ -128,7 +128,7 @@ const newGames = [
     title: "Word Finding",
     description: "Test your vocabulary by finding words in a grid of letters.",
     embedUrl: "https://www.crazygames.com/embed/word-finding",
-    thumbnailUrl: "https://images.crazygames.com/word-finding.png",
+    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Word+Finding",
     category: "Puzzle",
     rating: 4.2,
     dateAdded: "February 2025",
@@ -141,7 +141,7 @@ const newGames = [
     title: "Docks.io",
     description: "Build and manage your own shipping dock in this multiplayer simulation game.",
     embedUrl: "https://www.crazygames.com/embed/docks-io",
-    thumbnailUrl: "https://images.crazygames.com/docks-io.png",
+    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Docks.io",
     category: "Simulation",
     rating: 4.4,
     dateAdded: "February 2025",
@@ -154,7 +154,7 @@ const newGames = [
     title: "Survival Rush",
     description: "Survive as long as possible in this fast-paced action game.",
     embedUrl: "https://www.crazygames.com/embed/survival-rush",
-    thumbnailUrl: "https://images.crazygames.com/survival-rush.png",
+    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Survival+Rush",
     category: "Action",
     rating: 4.5,
     dateAdded: "February 2025",
@@ -267,7 +267,7 @@ function createGameCard(game) {
   card.className = 'game-card';
   
   // Default thumbnail if not provided
-  const thumbnailUrl = game.thumbnailUrl || `https://via.placeholder.com/300x200/1a1b26/ffffff?text=${encodeURIComponent(game.title)}`;
+  const thumbnailUrl = game.thumbnailUrl || `https://placehold.co/300x200/1a1b26/ffffff?text=${encodeURIComponent(game.title)}`;
   
   card.innerHTML = `
     <div class="game-thumbnail">
@@ -298,12 +298,24 @@ function loadGameDetails(gameId) {
   }
   
   // Set page title
-  document.title = `${game.title} - SGameTune`;
+  document.title = `${game.title} - LovexGames`;
   
   // Update game iframe
   const gameFrame = document.getElementById('game-frame');
   if (gameFrame) {
+    // Set iframe source
     gameFrame.src = game.embedUrl;
+    
+    // Handle iframe load event
+    gameFrame.onload = function() {
+      console.log('Game frame loaded successfully');
+    };
+    
+    // Handle iframe error event
+    gameFrame.onerror = function() {
+      console.error('Error loading game frame');
+      showConnectionError(gameFrame, game);
+    };
   }
   
   // Update game details
@@ -316,6 +328,86 @@ function loadGameDetails(gameId) {
   
   // Load related games (games in the same category)
   loadRelatedGames(game);
+}
+
+// Show connection error dialog
+function showConnectionError(gameFrame, game) {
+  // Create error dialog element
+  const errorDialog = document.createElement('div');
+  errorDialog.className = 'connection-error-dialog';
+  errorDialog.innerHTML = `
+    <div class="error-icon">
+      <svg viewBox="0 0 24 24" width="48" height="48">
+        <path fill="#ffffff" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+      </svg>
+    </div>
+    <h3>Connection issues</h3>
+    <p>Oops, we're having troubles connecting you. Any progress you make will be lost. Try reloading the game to solve the issue.</p>
+    <div class="error-buttons">
+      <button class="offline-button">Continue offline</button>
+      <button class="reload-button">Reload game</button>
+    </div>
+  `;
+  
+  // Get the game frame container
+  const frameContainer = gameFrame.parentNode;
+  
+  // Add the error dialog to the container
+  frameContainer.appendChild(errorDialog);
+  
+  // Add event listeners to buttons
+  const offlineButton = errorDialog.querySelector('.offline-button');
+  const reloadButton = errorDialog.querySelector('.reload-button');
+  
+  offlineButton.addEventListener('click', function() {
+    errorDialog.remove();
+    loadOfflineMode(gameFrame, game);
+  });
+  
+  reloadButton.addEventListener('click', function() {
+    errorDialog.remove();
+    gameFrame.src = game.embedUrl;
+  });
+}
+
+// Load offline mode for the game
+function loadOfflineMode(gameFrame, game) {
+  gameFrame.srcdoc = `
+    <html>
+    <head>
+      <style>
+        body {
+          font-family: 'Inter', sans-serif;
+          background-color: #1a1b26;
+          color: #ffffff;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          margin: 0;
+          padding: 20px;
+          text-align: center;
+        }
+        h2 {
+          margin-bottom: 15px;
+        }
+        .game-image {
+          max-width: 80%;
+          height: auto;
+          border-radius: 8px;
+          margin: 20px 0;
+        }
+      </style>
+    </head>
+    <body>
+      <h2>${game.title} - Offline Mode</h2>
+      <img src="${game.thumbnailUrl}" alt="${game.title}" class="game-image">
+      <p>${game.description}</p>
+      <p><strong>How to play:</strong> ${game.instructions}</p>
+    </body>
+    </html>
+  `;
 }
 
 // Load related games for the game detail page
@@ -342,7 +434,7 @@ function loadRelatedGames(currentGame) {
     relatedGameCard.className = 'related-game-card';
     
     // Default thumbnail if not provided
-    const thumbnailUrl = game.thumbnailUrl || `https://via.placeholder.com/80x60/1a1b26/ffffff?text=${encodeURIComponent(game.title)}`;
+    const thumbnailUrl = game.thumbnailUrl || `https://placehold.co/80x60/1a1b26/ffffff?text=${encodeURIComponent(game.title)}`;
     
     relatedGameCard.innerHTML = `
       <div class="related-game-thumb">

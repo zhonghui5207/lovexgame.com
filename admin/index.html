@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LovexGames 管理后台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin-page">
+    <div class="admin-sidebar">
+        <div class="admin-logo">
+            <img src="../images/logo.svg" alt="LovexGames Logo">
+            <h2>LovexGames</h2>
+        </div>
+        <nav class="admin-nav">
+            <ul>
+                <li class="active"><a href="index.html"><i class="fas fa-gamepad"></i> 游戏管理</a></li>
+                <li><a href="categories.html"><i class="fas fa-tags"></i> 分类管理</a></li>
+                <li><a href="import.html"><i class="fas fa-file-import"></i> 批量导入</a></li>
+                <li><a href="settings.html"><i class="fas fa-cog"></i> 网站设置</a></li>
+                <li class="logout"><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> 退出登录</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="admin-content">
+        <header class="admin-header">
+            <h1>游戏管理</h1>
+            <div class="admin-actions">
+                <button id="add-game-btn" class="primary-btn"><i class="fas fa-plus"></i> 添加游戏</button>
+            </div>
+        </header>
+        <main class="admin-main">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>游戏列表</h2>
+                    <div class="search-box">
+                        <input type="text" id="search-games" placeholder="搜索游戏...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div class="admin-card-body">
+                    <table class="admin-table" id="games-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>缩略图</th>
+                                <th>游戏名称</th>
+                                <th>分类</th>
+                                <th>添加日期</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="games-list">
+                            <!-- 游戏列表将通过JavaScript动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 添加/编辑游戏模态框 -->
+    <div class="modal" id="game-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">添加新游戏</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="game-form">
+                    <input type="hidden" id="game-id">
+                    <div class="form-group">
+                        <label for="game-title">游戏名称</label>
+                        <input type="text" id="game-title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="game-description">游戏简介</label>
+                        <textarea id="game-description" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="game-embed-url">嵌入代码URL</label>
+                        <input type="text" id="game-embed-url" name="embedUrl" required>
+                        <small>例如: https://www.example.com/embed/game-name</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="game-thumbnail">缩略图URL</label>
+                        <input type="text" id="game-thumbnail" name="thumbnailUrl" required>
+                        <small>建议尺寸: 600x400 像素</small>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="game-category">游戏分类</label>
+                            <select id="game-category" name="category" required>
+                                <!-- 分类选项将通过JavaScript动态加载 -->
+                            </select>
+                        </div>
+                        <div class="form-group half">
+                            <label for="game-rating">评分 (1-5)</label>
+                            <input type="number" id="game-rating" name="rating" min="1" max="5" step="0.1" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="game-instructions">游戏说明</label>
+                        <textarea id="game-instructions" name="instructions" rows="3" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="game-featured" name="isFeatured">
+                            <label for="game-featured">推荐游戏</label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="game-new" name="isNew">
+                            <label for="game-new">新游戏</label>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="secondary-btn" id="cancel-game">取消</button>
+                        <button type="submit" class="primary-btn">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认模态框 -->
+    <div class="modal" id="delete-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>确认删除</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>您确定要删除游戏 "<span id="delete-game-title"></span>" 吗？此操作无法撤销。</p>
+                <div class="form-actions">
+                    <button type="button" class="secondary-btn" id="cancel-delete">取消</button>
+                    <button type="button" class="danger-btn" id="confirm-delete">删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LovexGames 管理后台 - 登录</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin-login-page">
+    <div class="admin-login-container">
+        <div class="admin-login-logo">
+            <img src="../images/logo.svg" alt="LovexGames Logo">
+            <h1>LovexGames</h1>
+        </div>
+        <div class="admin-login-form">
+            <h2>管理员登录</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-user"></i></label>
+                    <input type="text" id="username" name="username" placeholder="用户名" required>
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i></label>
+                    <input type="password" id="password" name="password" placeholder="密码" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="login-btn">登录</button>
+                </div>
+                <div id="login-error" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+    <script src="../js/admin.js"></script>
+</body>
+</html>

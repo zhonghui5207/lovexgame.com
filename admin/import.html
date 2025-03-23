@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量导入 - LovexGames 管理后台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin-page">
+    <div class="admin-sidebar">
+        <div class="admin-logo">
+            <img src="../images/logo.svg" alt="LovexGames Logo">
+            <h2>LovexGames</h2>
+        </div>
+        <nav class="admin-nav">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-gamepad"></i> 游戏管理</a></li>
+                <li><a href="categories.html"><i class="fas fa-tags"></i> 分类管理</a></li>
+                <li class="active"><a href="import.html"><i class="fas fa-file-import"></i> 批量导入</a></li>
+                <li><a href="settings.html"><i class="fas fa-cog"></i> 网站设置</a></li>
+                <li class="logout"><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> 退出登录</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="admin-content">
+        <header class="admin-header">
+            <h1>批量导入游戏</h1>
+            <div class="admin-actions">
+                <a href="../templates/games_template.xlsx" download class="secondary-btn">
+                    <i class="fas fa-download"></i> 下载Excel模板
+                </a>
+            </div>
+        </header>
+        <main class="admin-main">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>上传Excel文件</h2>
+                </div>
+                <div class="admin-card-body">
+                    <div class="import-container">
+                        <div class="import-instructions">
+                            <h3>导入说明</h3>
+                            <ol>
+                                <li>下载Excel模板文件</li>
+                                <li>按照模板格式填写游戏信息</li>
+                                <li>上传填写好的Excel文件</li>
+                                <li>检查导入预览，确认无误后点击"确认导入"</li>
+                            </ol>
+                            <div class="import-note">
+                                <i class="fas fa-info-circle"></i>
+                                <span>注意：批量导入将根据游戏ID进行更新或新增。如果ID已存在，将更新现有游戏；如果ID不存在，将添加为新游戏。</span>
+                            </div>
+                        </div>
+                        
+                        <div class="upload-area" id="upload-area">
+                            <div class="upload-icon">
+                                <i class="fas fa-file-excel"></i>
+                            </div>
+                            <p>拖放Excel文件到这里，或</p>
+                            <label for="excel-file" class="upload-btn">选择文件</label>
+                            <input type="file" id="excel-file" accept=".xlsx, .xls" style="display: none;">
+                            <p class="upload-status" id="upload-status"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 导入预览 -->
+            <div class="admin-card" id="import-preview-container" style="display: none;">
+                <div class="admin-card-header">
+                    <h2>导入预览</h2>
+                    <div class="preview-actions">
+                        <span id="games-count">已解析 0 个游戏</span>
+                        <button id="confirm-import" class="primary-btn"><i class="fas fa-check"></i> 确认导入</button>
+                    </div>
+                </div>
+                <div class="admin-card-body">
+                    <div class="preview-table-wrapper">
+                        <table class="admin-table" id="preview-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>游戏名称</th>
+                                    <th>分类</th>
+                                    <th>缩略图</th>
+                                    <th>嵌入URL</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="preview-list">
+                                <!-- 预览内容将通过JavaScript动态加载 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 导入结果 -->
+            <div class="admin-card" id="import-result-container" style="display: none;">
+                <div class="admin-card-header">
+                    <h2>导入结果</h2>
+                </div>
+                <div class="admin-card-body">
+                    <div class="import-result" id="import-result">
+                        <!-- 导入结果将通过JavaScript动态加载 -->
+                    </div>
+                    <div class="form-actions">
+                        <a href="index.html" class="primary-btn"><i class="fas fa-list"></i> 查看游戏列表</a>
+                        <button id="import-again" class="secondary-btn"><i class="fas fa-redo"></i> 再次导入</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="../js/admin.js"></script>
+    <script src="../js/import.js"></script>
+</body>
+</html>
