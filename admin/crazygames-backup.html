@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrazyGames导入 - LovexGames 管理后台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/crazygames-importer.css">
+</head>
+<body class="admin-page">
+    <div class="admin-sidebar">
+        <div class="admin-logo">
+            <img src="../images/logo.svg" alt="LovexGames Logo">
+            <h2>LovexGames</h2>
+        </div>
+        <nav class="admin-nav">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-gamepad"></i> 游戏管理</a></li>
+                <li><a href="categories.html"><i class="fas fa-tags"></i> 分类管理</a></li>
+                <li><a href="import.html"><i class="fas fa-file-import"></i> 批量导入</a></li>
+                <li class="active"><a href="crazygames.html"><i class="fas fa-cloud-download-alt"></i> CrazyGames导入</a></li>
+                <li><a href="settings.html"><i class="fas fa-cog"></i> 网站设置</a></li>
+                <li class="logout"><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> 退出登录</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="admin-content">
+        <header class="admin-header">
+            <h1>从CrazyGames导入游戏</h1>
+            <div class="admin-actions">
+                <button id="generate-excel-btn" class="primary-btn" style="display: none;">
+                    <i class="fas fa-file-excel"></i> 生成Excel文件
+                </button>
+            </div>
+        </header>
+        <main class="admin-main">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>选择游戏分类和数量</h2>
+                </div>
+                <div class="admin-card-body">
+                    <div class="filter-container">
+                        <div class="form-group">
+                            <label for="category-select">游戏分类</label>
+                            <select id="category-select">
+                                <option value="">所有分类</option>
+                                <!-- 分类将通过JavaScript动态加载 -->
+                            </select>
+                            <span id="categories-loading"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="games-limit">游戏数量</label>
+                            <input type="number" id="games-limit" min="1" max="100" value="10">
+                        </div>
+                        <button id="fetch-games-btn" class="primary-btn">
+                            <i class="fas fa-search"></i> 获取游戏
+                        </button>
+                    </div>
+                    <div class="api-note">
+                        <i class="fas fa-info-circle"></i>
+                        <span>注意：此功能使用CrazyGames API获取游戏数据。请确保您有权使用这些数据，并遵守CrazyGames的使用条款。</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 游戏列表 -->
+            <div class="admin-card" id="games-list-container">
+                <div class="admin-card-header">
+                    <h2>游戏列表</h2>
+                    <div class="games-count-container">
+                        <span id="games-count">0 个游戏</span>
+                        <div class="select-all-container">
+                            <label class="checkbox-container">全选
+                                <input type="checkbox" id="select-all-games" checked>
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-card-body">
+                    <div id="games-loading">请选择分类并点击"获取游戏"按钮</div>
+                    <div class="games-grid" id="games-container">
+                        <!-- 游戏卡片将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 导入说明 -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>导入说明</h2>
+                </div>
+                <div class="admin-card-body">
+                    <div class="import-instructions">
+                        <ol>
+                            <li>选择游戏分类和要获取的游戏数量</li>
+                            <li>点击"获取游戏"按钮从CrazyGames加载游戏</li>
+                            <li>勾选您想要导入的游戏</li>
+                            <li>点击"生成Excel文件"下载Excel格式的游戏数据</li>
+                            <li>在"批量导入"页面上传生成的Excel文件</li>
+                        </ol>
+                        
+                        <div class="import-note">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>提示：生成的Excel文件已经符合LovexGames的导入格式，可以直接用于批量导入功能。</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="../js/admin.js"></script>
+    <script src="../js/crazygames-importer.js"></script>
+    <script>
+        // 全选/取消全选
+        document.getElementById('select-all-games').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.game-select');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+    </script>
+</body>
+</html>
