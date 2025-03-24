@@ -372,39 +372,17 @@ class CrazyGamesCrawler:
     def _get_embed_url(self, soup, fallback_url):
         """获取游戏嵌入URL"""
         # 尝试从iframe中提取
-        iframe = soup.select_one('iframe.game-iframe, iframe[id*="game"], iframe[src*="game"]')
+        iframe = soup.select_one('iframe.game-iframe, iframe[id*="game"], iframe[src*="game"], iframe[src*="embed"]')
         if iframe:
             src = iframe.get('src')
             if src:
                 return src
         
-        # 尝试从脚本中提取
-        scripts = soup.select('script')
-        for script in scripts:
-            script_text = script.string
-            if not script_text:
-                continue
-            
-            # 查找包含游戏URL的脚本
-            url_patterns = [
-                r'"embedUrl"\s*:\s*"([^"]+)"',
-                r'"gameUrl"\s*:\s*"([^"]+)"',
-                r'"iframeUrl"\s*:\s*"([^"]+)"',
-                r'"url"\s*:\s*"([^"]+)"',
-                r'iframe.src\s*=\s*"([^"]+)"'
-            ]
-            
-            for pattern in url_patterns:
-                url_match = re.search(pattern, script_text)
-                if url_match:
-                    return url_match.group(1)
-        
-        # 尝试查找游戏容器的data-url属性
-        game_container = soup.select_one('#game-container, .game-container')
-        if game_container:
-            data_url = game_container.get('data-url')
-            if data_url:
-                return data_url
+        # 尝试构造嵌入URL
+        game_slug = fallback_url.split('/')[-1]
+        if game_slug and 'crazygames.com' in fallback_url:
+            embed_url = f"https://www.crazygames.com/embed/{game_slug}"
+            return embed_url
         
         # 如果都失败了，返回原始URL
         return fallback_url
@@ -419,6 +397,65 @@ class CrazyGamesCrawler:
             'rating': 0,
             'embedUrl': url
         }
+    
+    def export_to_json(self, games):
+        """导出游戏数据到JSON文件，适合网站导入"""
+        if not games:
+            self.log("没有游戏数据可导出", 'WARNING')
+            return False
+        
+        try:
+            # 转换为网站格式
+            site_format_games = []
+            for game in games:
+                # 确保缩略图URL是有效的
+                thumbnail_url = game.get('thumbnailUrl', '')
+                if not thumbnail_url:
+                    # 生成占位图URL
+                    title = game.get('title', 'Game')
+                    thumbnail_url = f"https://placehold.co/600x400/1a1b26/ffffff?text={title.replace(' ', '+')}"
+                
+                # 确保嵌入URL是有效的
+                embed_url = game.get('embedUrl', '')
+                if not embed_url or embed_url == game.get('url', ''):
+                    # 尝试从游戏URL构造嵌入URL
+                    game_url = game.get('url', '')
+                    if 'crazygames.com' in game_url:
+                        game_slug = game_url.split('/')[-1]
+                        embed_url = f"https://www.crazygames.com/embed/{game_slug}"
+                    else:
+                        embed_url = game_url
+                
+                site_game = {
+                    'title': game.get('title', ''),
+                    'description': game.get('description', ''),
+                    'category': game.get('category', ''),
+                    'thumbnailUrl': thumbnail_url,
+                    'embedUrl': embed_url,
+                    'instructions': game.get('instructions', ''),
+                    'source': 'CrazyGames',
+                    'importDate': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                }
+                site_format_games.append(site_game)
+            
+            # 保存JSON文件到output目录
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = os.path.join(self.output_dir, f"crazygames_data_{timestamp}.json")
+            with open(filename, 'w', encoding='utf-8') as f:
+                json.dump(site_format_games, f, ensure_ascii=False, indent=2)
+            
+            self.log(f"数据已成功导出到 {filename}", 'INFO')
+            
+            # 创建admin/crawler-import.html可以使用的导入文件
+            with open(self.import_file, 'w', encoding='utf-8') as f:
+                json.dump(site_format_games, f, ensure_ascii=False, indent=2)
+            
+            self.log(f"导入数据已保存到 {self.import_file}，可以在管理后台导入", 'INFO')
+            return True
+        
+        except Exception as e:
+            self.log(f"导出JSON失败: {str(e)}", 'ERROR')
+            return False
     
     def export_to_excel(self, games):
         """将游戏数据导出到Excel文件"""
@@ -452,59 +489,6 @@ class CrazyGamesCrawler:
         
         except Exception as e:
             self.log(f"导出Excel失败: {str(e)}", 'ERROR')
-            return False
-    
-    def export_to_json(self, games):
-        """导出游戏数据到JSON文件，适合网站导入"""
-        if not games:
-            self.log("没有游戏数据可导出", 'WARNING')
-            return False
-        
-        try:
-            # 转换为网站格式
-            site_format_games = []
-            for game in games:
-                # 确保缩略图URL是有效的
-                thumbnail_url = game.get('thumbnailUrl', '')
-                if not thumbnail_url:
-                    # 生成占位图URL
-                    title = game.get('title', 'Game')
-                    thumbnail_url = f"https://placehold.co/600x400/1a1b26/ffffff?text={title.replace(' ', '+')}"
-                
-                # 确保嵌入URL是有效的
-                embed_url = game.get('embedUrl', '')
-                if not embed_url or embed_url == game.get('url', ''):
-                    embed_url = game.get('url', '')
-                
-                site_game = {
-                    'title': game.get('title', ''),
-                    'description': game.get('description', ''),
-                    'category': game.get('category', ''),
-                    'thumbnailUrl': thumbnail_url,
-                    'embedUrl': embed_url,
-                    'instructions': game.get('instructions', ''),
-                    'source': 'CrazyGames',
-                    'importDate': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                }
-                site_format_games.append(site_game)
-            
-            # 保存JSON文件到output目录
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            filename = os.path.join(self.output_dir, f"crazygames_data_{timestamp}.json")
-            with open(filename, 'w', encoding='utf-8') as f:
-                json.dump(site_format_games, f, ensure_ascii=False, indent=2)
-            
-            self.log(f"数据已成功导出到 {filename}", 'INFO')
-            
-            # 创建admin/crawler-import.html可以使用的导入文件
-            with open(self.import_file, 'w', encoding='utf-8') as f:
-                json.dump(site_format_games, f, ensure_ascii=False, indent=2)
-            
-            self.log(f"导入数据已保存到 {self.import_file}，可以在管理后台导入", 'INFO')
-            return True
-        
-        except Exception as e:
-            self.log(f"导出JSON失败: {str(e)}", 'ERROR')
             return False
 
 

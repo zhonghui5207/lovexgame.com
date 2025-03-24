@@ -423,16 +423,27 @@
             
             // 渲染游戏列表
             function renderGames(games) {
+                console.log("渲染游戏列表:", games); // 添加日志
+                
                 const gamesContainer = document.getElementById('games-list');
                 const gamesCount = document.getElementById('games-count');
                 
-                if (!gamesContainer || !gamesCount) return;
+                if (!gamesContainer || !gamesCount) {
+                    console.error("找不到游戏列表容器或计数元素");
+                    return;
+                }
                 
                 // 更新游戏计数
                 gamesCount.textContent = `${games.length} 个游戏`;
                 
                 // 清空现有内容
                 gamesContainer.innerHTML = '';
+                
+                // 确保games是一个数组
+                if (!Array.isArray(games)) {
+                    console.error("游戏数据不是数组:", games);
+                    games = [];
+                }
                 
                 // 添加游戏卡片
                 games.forEach((game, index) => {
@@ -514,6 +525,8 @@
                         });
                     });
                 }
+                
+                console.log("游戏列表渲染完成，共", games.length, "个游戏"); // 添加日志
             }
             
             // 加载本地数据
@@ -571,26 +584,11 @@
             crawlerLog.clear();
             crawlerLog.info('正在刷新游戏数据...');
             
-            // 使用异步请求加载JSON文件
-            fetch('../scripts/games_for_import.json?t=' + new Date().getTime())
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP错误: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(latestData => {
-                    gamesData = latestData;
-                    renderGames(gamesData);
-                    crawlerLog.success(`成功刷新数据，加载了 ${gamesData.length} 个游戏`);
-                })
-                .catch(error => {
-                    crawlerLog.error(`刷新游戏数据失败: ${error.message}`);
-                    console.error('刷新错误详情:', error);
-                    
-                    // 如果fetch失败，尝试使用硬编码的数据
-                    loadFallbackData();
-                });
+            // 直接调用loadLocalGames函数，确保使用相同的逻辑
+            loadLocalGames();
+            
+            // 添加成功消息
+            crawlerLog.success('游戏数据刷新成功');
         }
         
         // 加载备用数据（当无法从文件加载时）
