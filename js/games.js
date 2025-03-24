@@ -1,168 +1,283 @@
 // Games Data
-const featuredGames = [
-  {
-    id: 'doors-online',
-    title: "Doors Online",
-    description: "A thrilling multiplayer horror game inspired by the popular Roblox experience.",
-    embedUrl: "https://www.crazygames.com/embed/doors-online",
-    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Doors+Online",
-    category: "Horror",
-    rating: 4.7,
-    dateAdded: "March 2025",
-    instructions: "Use WASD or arrow keys to move your character. Press E to interact with objects and doors. Work together with other players to solve puzzles and survive the horrors that lurk behind each door.",
-    isFeatured: true,
-    isNew: false
-  }
-];
+let featuredGames = [];
+let popularGames = [];
+let newGames = [];
+let allGames = []; // 全局变量存储所有游戏
 
-const popularGames = [
-  {
-    id: 'ragdoll-archers',
-    title: "Ragdoll Archers",
-    description: "Compete in archery battles with hilarious ragdoll physics.",
-    embedUrl: "https://www.crazygames.com/embed/ragdoll-archers",
-    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Ragdoll+Archers",
-    category: "Action",
-    rating: 4.5,
-    dateAdded: "March 2025",
-    instructions: "Use your mouse to aim and shoot arrows. Try to hit your opponents while avoiding their shots.",
-    isFeatured: false,
-    isNew: false
-  },
-  {
-    id: 'subway-surfers',
-    title: "Subway Surfers",
-    description: "Run as fast as you can through the subway in this endless runner game.",
-    embedUrl: "https://www.crazygames.com/embed/subway-surfers",
-    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Subway+Surfers",
-    category: "Action",
-    rating: 4.8,
-    dateAdded: "February 2025",
-    instructions: "Swipe up to jump, down to roll, and left or right to change lanes. Collect coins and power-ups while avoiding obstacles.",
-    isFeatured: false,
-    isNew: false
-  },
-  {
-    id: 'farm-merge-valley',
-    title: "Farm Merge Valley",
-    description: "Build and expand your farm by merging similar items in this relaxing game.",
-    embedUrl: "https://www.crazygames.com/embed/farm-merge-valley",
-    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Farm+Merge+Valley",
-    category: "Puzzle",
-    rating: 4.4,
-    dateAdded: "February 2025",
-    instructions: "Click and drag similar items to merge them into higher-level items. Manage your resources efficiently to expand your farm.",
-    isFeatured: false,
-    isNew: false
-  },
-  {
-    id: 'bloxd-io',
-    title: "Bloxd.io",
-    description: "A multiplayer block-building and survival game similar to Minecraft.",
-    embedUrl: "https://www.crazygames.com/embed/bloxdio",
-    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Bloxd.io",
-    category: "Adventure",
-    rating: 4.7,
-    dateAdded: "December 2024",
-    instructions: "Use WASD to move, Space to jump, and mouse to look around. Left-click to break blocks and right-click to place them.",
-    isFeatured: false,
-    isNew: false
-  },
-  {
-    id: 'slice-master',
-    title: "Slice Master",
-    description: "Test your precision by slicing through stacked objects in this satisfying game.",
-    embedUrl: "https://www.crazygames.com/embed/slice-master",
-    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Slice+Master",
-    category: "Puzzle",
-    rating: 4.4,
-    dateAdded: "February 2025",
-    instructions: "Drag your finger or mouse to slice through the stacked objects. Try to get as close to the perfect cut as possible.",
-    isFeatured: false,
-    isNew: false
+// 从本地存储加载游戏数据
+function loadGamesFromStorage() {
+  // 尝试从localStorage获取游戏数据
+  const storedGames = localStorage.getItem('lovexgames_games');
+  
+  if (storedGames) {
+    allGames = JSON.parse(storedGames); // 保存所有游戏到全局变量
+    
+    // 根据状态分类游戏
+    featuredGames = allGames.filter(game => game.status === '推荐' || game.isFeatured);
+    newGames = allGames.filter(game => game.status === '新游戏' || game.isNew);
+    
+    // 其他游戏作为热门游戏
+    popularGames = allGames.filter(game => 
+      (!game.status || (game.status !== '推荐' && game.status !== '新游戏')) && 
+      !game.isFeatured && !game.isNew
+    );
+    
+    // 如果某个分类没有游戏，使用默认的硬编码游戏
+    if (featuredGames.length === 0) {
+      featuredGames = [
+        {
+          id: 'doors-online',
+          title: "Doors Online",
+          description: "A thrilling multiplayer horror game inspired by the popular Roblox experience.",
+          embedUrl: "https://www.crazygames.com/embed/doors-online",
+          thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Doors+Online",
+          category: "Horror",
+          rating: 4.7,
+          dateAdded: "March 2025",
+          instructions: "Use WASD or arrow keys to move your character. Press E to interact with objects and doors. Work together with other players to solve puzzles and survive the horrors that lurk behind each door.",
+          isFeatured: true,
+          isNew: false
+        }
+      ];
+    }
+    
+    // 确保每个分类至少有一些游戏显示
+    if (popularGames.length === 0) {
+      popularGames = getDefaultPopularGames();
+    }
+    
+    if (newGames.length === 0) {
+      newGames = getDefaultNewGames();
+    }
+  } else {
+    // 如果没有存储的游戏数据，使用默认的硬编码游戏
+    featuredGames = [
+      {
+        id: 'doors-online',
+        title: "Doors Online",
+        description: "A thrilling multiplayer horror game inspired by the popular Roblox experience.",
+        embedUrl: "https://www.crazygames.com/embed/doors-online",
+        thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Doors+Online",
+        category: "Horror",
+        rating: 4.7,
+        dateAdded: "March 2025",
+        instructions: "Use WASD or arrow keys to move your character. Press E to interact with objects and doors. Work together with other players to solve puzzles and survive the horrors that lurk behind each door.",
+        isFeatured: true,
+        isNew: false
+      }
+    ];
+    
+    popularGames = getDefaultPopularGames();
+    newGames = getDefaultNewGames();
   }
-];
+}
 
-const newGames = [
-  {
-    id: 'farm-merge-valley',
-    title: "Farm Merge Valley",
-    description: "Build and expand your farm by merging similar items in this relaxing game.",
-    embedUrl: "https://www.crazygames.com/embed/farm-merge-valley",
-    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Farm+Merge+Valley",
-    category: "Puzzle",
-    rating: 4.6,
-    dateAdded: "March 2025",
-    instructions: "Drag and drop similar items to merge them into upgraded versions. Build and expand your farm to unlock new items and areas.",
-    isFeatured: false,
-    isNew: true
-  },
-  {
-    id: 'pirates-caribbean',
-    title: "Pirates of the Caribbean",
-    description: "Set sail on the high seas in this adventure game based on the popular movie franchise.",
-    embedUrl: "https://www.crazygames.com/embed/pirates-of-the-caribbean",
-    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Pirates+of+the+Caribbean",
-    category: "Adventure",
-    rating: 4.5,
-    dateAdded: "March 2025",
-    instructions: "Use WASD to navigate your ship. Press Space to fire cannons and E to interact with objects.",
-    isFeatured: false,
-    isNew: true
-  },
-  {
-    id: 'tower-defense',
-    title: "Tower Defense",
-    description: "Strategically place towers to defend against waves of enemies in this classic game.",
-    embedUrl: "https://www.crazygames.com/embed/tower-defense",
-    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Tower+Defense",
-    category: "Strategy",
-    rating: 4.3,
-    dateAdded: "March 2025",
-    instructions: "Click on the map to place towers. Upgrade towers by clicking on them and selecting the upgrade option.",
-    isFeatured: false,
-    isNew: true
-  },
-  {
-    id: 'word-finding',
-    title: "Word Finding",
-    description: "Test your vocabulary by finding words in a grid of letters.",
-    embedUrl: "https://www.crazygames.com/embed/word-finding",
-    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Word+Finding",
-    category: "Puzzle",
-    rating: 4.2,
-    dateAdded: "February 2025",
-    instructions: "Drag your finger or mouse to connect letters and form words. The longer the word, the more points you earn.",
-    isFeatured: false,
-    isNew: true
-  },
-  {
-    id: 'docks-io',
-    title: "Docks.io",
-    description: "Build and manage your own shipping dock in this multiplayer simulation game.",
-    embedUrl: "https://www.crazygames.com/embed/docks-io",
-    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Docks.io",
-    category: "Simulation",
-    rating: 4.4,
-    dateAdded: "February 2025",
-    instructions: "Click to select buildings and ships. Drag to place buildings. Manage resources efficiently to expand your dock.",
-    isFeatured: false,
-    isNew: true
-  },
-  {
-    id: 'survival-rush',
-    title: "Survival Rush",
-    description: "Survive as long as possible in this fast-paced action game.",
-    embedUrl: "https://www.crazygames.com/embed/survival-rush",
-    thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Survival+Rush",
-    category: "Action",
-    rating: 4.5,
-    dateAdded: "February 2025",
-    instructions: "Use WASD to move and mouse to aim and shoot. Collect power-ups to enhance your abilities.",
-    isFeatured: false,
-    isNew: true
+// 获取默认的热门游戏
+function getDefaultPopularGames() {
+  return [
+    {
+      id: 'ragdoll-archers',
+      title: "Ragdoll Archers",
+      description: "Compete in archery battles with hilarious ragdoll physics.",
+      embedUrl: "https://www.crazygames.com/embed/ragdoll-archers",
+      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Ragdoll+Archers",
+      category: "Action",
+      rating: 4.5,
+      dateAdded: "March 2025",
+      instructions: "Use your mouse to aim and shoot arrows. Try to hit your opponents while avoiding their shots.",
+      isFeatured: false,
+      isNew: false
+    },
+    {
+      id: 'subway-surfers',
+      title: "Subway Surfers",
+      description: "Run as fast as you can through the subway in this endless runner game.",
+      embedUrl: "https://www.crazygames.com/embed/subway-surfers",
+      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Subway+Surfers",
+      category: "Action",
+      rating: 4.8,
+      dateAdded: "February 2025",
+      instructions: "Swipe up to jump, down to roll, and left or right to change lanes. Collect coins and power-ups while avoiding obstacles.",
+      isFeatured: false,
+      isNew: false
+    },
+    {
+      id: 'farm-merge-valley',
+      title: "Farm Merge Valley",
+      description: "Build and expand your farm by merging similar items in this relaxing game.",
+      embedUrl: "https://www.crazygames.com/embed/farm-merge-valley",
+      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Farm+Merge+Valley",
+      category: "Puzzle",
+      rating: 4.4,
+      dateAdded: "February 2025",
+      instructions: "Click and drag similar items to merge them into higher-level items. Manage your resources efficiently to expand your farm.",
+      isFeatured: false,
+      isNew: false
+    },
+    {
+      id: 'bloxd-io',
+      title: "Bloxd.io",
+      description: "A multiplayer block-building and survival game similar to Minecraft.",
+      embedUrl: "https://www.crazygames.com/embed/bloxdio",
+      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Bloxd.io",
+      category: "Adventure",
+      rating: 4.7,
+      dateAdded: "December 2024",
+      instructions: "Use WASD to move, Space to jump, and mouse to look around. Left-click to break blocks and right-click to place them.",
+      isFeatured: false,
+      isNew: false
+    },
+    {
+      id: 'slice-master',
+      title: "Slice Master",
+      description: "Test your precision by slicing through stacked objects in this satisfying game.",
+      embedUrl: "https://www.crazygames.com/embed/slice-master",
+      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Slice+Master",
+      category: "Puzzle",
+      rating: 4.4,
+      dateAdded: "February 2025",
+      instructions: "Drag your finger or mouse to slice through the stacked objects. Try to get as close to the perfect cut as possible.",
+      isFeatured: false,
+      isNew: false
+    }
+  ];
+}
+
+// 获取默认的新游戏
+function getDefaultNewGames() {
+  return [
+    {
+      id: 'farm-merge-valley',
+      title: "Farm Merge Valley",
+      description: "Build and expand your farm by merging similar items in this relaxing game.",
+      embedUrl: "https://www.crazygames.com/embed/farm-merge-valley",
+      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Farm+Merge+Valley",
+      category: "Puzzle",
+      rating: 4.6,
+      dateAdded: "March 2025",
+      instructions: "Drag and drop similar items to merge them into upgraded versions. Build and expand your farm to unlock new items and areas.",
+      isFeatured: false,
+      isNew: true
+    },
+    {
+      id: 'pirates-caribbean',
+      title: "Pirates of the Caribbean",
+      description: "Sail the high seas, battle other ships, and search for treasure in this pirate adventure game.",
+      embedUrl: "https://www.crazygames.com/embed/pirates-caribbean",
+      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Pirates+of+the+Caribbean",
+      category: "Adventure",
+      rating: 4.5,
+      dateAdded: "March 2025",
+      instructions: "Use WASD to navigate your ship. Press Space to fire cannons and E to interact with objects.",
+      isFeatured: false,
+      isNew: true
+    },
+    {
+      id: 'drift-hunters',
+      title: "Drift Hunters",
+      description: "Master the art of drifting in this realistic driving simulator.",
+      embedUrl: "https://www.crazygames.com/embed/drift-hunters",
+      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Drift+Hunters",
+      category: "Racing",
+      rating: 4.7,
+      dateAdded: "March 2025",
+      instructions: "Use arrow keys or WASD to control your car. Hold Space to use the handbrake for drifting.",
+      isFeatured: false,
+      isNew: true
+    },
+    {
+      id: 'slope-game',
+      title: "Slope Game",
+      description: "Test your reflexes in this fast-paced endless runner where you control a ball rolling down a slope.",
+      embedUrl: "https://www.crazygames.com/embed/slope-game",
+      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Slope+Game",
+      category: "Action",
+      rating: 4.4,
+      dateAdded: "March 2025",
+      instructions: "Use the arrow keys or A/D to move the ball left and right. Avoid obstacles and try to get as far as possible.",
+      isFeatured: false,
+      isNew: true
+    },
+    {
+      id: 'paper-io-2',
+      title: "Paper.io 2",
+      description: "Conquer territory by enclosing areas in this multiplayer IO game.",
+      embedUrl: "https://www.crazygames.com/embed/paper-io-2",
+      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Paper.io+2",
+      category: "IO",
+      rating: 4.6,
+      dateAdded: "March 2025",
+      instructions: "Use arrow keys or WASD to move your character. Encircle areas to claim them as your territory, but don't let others cut your trail!",
+      isFeatured: false,
+      isNew: true
+    }
+  ];
+}
+
+// Load games for the home page
+function loadHomePageGames() {
+  // 首先从存储中加载游戏
+  loadGamesFromStorage();
+  
+  // Load featured games
+  const featuredGamesContainer = document.getElementById('featured-games');
+  if (featuredGamesContainer) {
+    featuredGamesContainer.innerHTML = ''; // 清空容器
+    featuredGames.forEach(game => {
+      featuredGamesContainer.appendChild(createGameCard(game));
+    });
   }
-];
+  
+  // Load popular games
+  const popularGamesContainer = document.getElementById('popular-games');
+  if (popularGamesContainer) {
+    popularGamesContainer.innerHTML = ''; // 清空容器
+    popularGames.forEach(game => {
+      popularGamesContainer.appendChild(createGameCard(game));
+    });
+  }
+  
+  // Load new games
+  const newGamesContainer = document.getElementById('new-games');
+  if (newGamesContainer) {
+    newGamesContainer.innerHTML = ''; // 清空容器
+    newGames.forEach(game => {
+      newGamesContainer.appendChild(createGameCard(game));
+    });
+  }
+}
+
+// 加载分类游戏
+function loadCategoryGames(categoryId) {
+  // 获取分类名称
+  const category = gameCategories.find(cat => cat.id === categoryId);
+  
+  if (category) {
+    // 更新页面标题
+    document.title = `${category.name} 游戏 - LovexGames`;
+    document.getElementById('category-title').textContent = `${category.name} 游戏`;
+    
+    // 获取该分类的游戏
+    const categoryGames = allGames.filter(game => 
+      game.category && game.category.toLowerCase() === category.name.toLowerCase()
+    );
+    
+    // 显示游戏
+    const gamesContainer = document.getElementById('category-games');
+    if (!gamesContainer) return;
+    
+    gamesContainer.innerHTML = '';
+    
+    if (categoryGames.length > 0) {
+      categoryGames.forEach(game => {
+        const gameCard = createGameCard(game);
+        gamesContainer.appendChild(gameCard);
+      });
+    } else {
+      gamesContainer.innerHTML = '<p class="no-games">该分类下暂无游戏。</p>';
+    }
+  }
+}
 
 // Game categories
 const gameCategories = [
@@ -177,7 +292,8 @@ const gameCategories = [
 ];
 
 // All games combined for search and reference
-const allGames = [...featuredGames, ...popularGames, ...newGames].filter((game, index, self) => 
+// 更新全局allGames变量，而不是重新声明
+allGames = [...featuredGames, ...popularGames, ...newGames].filter((game, index, self) => 
   index === self.findIndex((g) => g.id === game.id)
 );
 
@@ -198,6 +314,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
+  // Check if we're on the category page
+  if (document.getElementById('category-games')) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryId = urlParams.get('id');
+    if (categoryId) {
+      loadCategoryGames(categoryId);
+    }
+  }
+  
   // Add event listener for search
   const searchInput = document.querySelector('.search-input');
   if (searchInput) {
@@ -208,33 +333,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
-
-// Load games for the home page
-function loadHomePageGames() {
-  // Load featured games
-  const featuredGamesContainer = document.getElementById('featured-games');
-  if (featuredGamesContainer) {
-    featuredGames.forEach(game => {
-      featuredGamesContainer.appendChild(createGameCard(game));
-    });
-  }
-  
-  // Load popular games
-  const popularGamesContainer = document.getElementById('popular-games');
-  if (popularGamesContainer) {
-    popularGames.forEach(game => {
-      popularGamesContainer.appendChild(createGameCard(game));
-    });
-  }
-  
-  // Load new games
-  const newGamesContainer = document.getElementById('new-games');
-  if (newGamesContainer) {
-    newGames.forEach(game => {
-      newGamesContainer.appendChild(createGameCard(game));
-    });
-  }
-}
 
 // Load game categories
 function loadGameCategories() {

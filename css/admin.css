@@ -328,6 +328,8 @@ body {
 .admin-table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
+  table-layout: fixed;
 }
 
 .admin-table th,
@@ -376,26 +378,58 @@ body {
   color: var(--admin-warning);
 }
 
+.admin-table th:nth-last-child(1),
+.admin-table th:nth-last-child(2) {
+  width: 100px;
+  text-align: center;
+}
+
+.admin-table td:nth-last-child(1),
+.admin-table td:nth-last-child(2) {
+  width: 100px;
+  text-align: center;
+}
+
 .admin-table .actions {
+  text-align: center;
+  width: 100%;
+}
+
+.admin-table .action-buttons {
   display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 8px;
 }
 
-.admin-table .actions button {
-  background: none;
-  border: none;
-  font-size: 16px;
+.admin-table .action-buttons button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 4px;
+  background-color: transparent;
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text);
   cursor: pointer;
-  color: var(--admin-text-light);
-  transition: color 0.3s;
+  transition: all 0.2s;
 }
 
-.admin-table .actions button:hover {
+.admin-table .action-buttons button:hover {
+  background-color: var(--admin-primary-light);
   color: var(--admin-primary);
 }
 
-.admin-table .actions button.delete:hover {
+.admin-table .action-buttons .edit-game:hover {
+  color: var(--admin-primary);
+  border-color: var(--admin-primary);
+}
+
+.admin-table .action-buttons .delete-game:hover {
   color: var(--admin-danger);
+  border-color: var(--admin-danger);
 }
 
 /* Modal */

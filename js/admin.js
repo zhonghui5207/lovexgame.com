@@ -207,8 +207,10 @@ function renderGames(games) {
       <td>${game.dateAdded}</td>
       <td>${statusHTML}</td>
       <td class="actions">
-        <button class="edit-game" data-id="${game.id}" title="编辑"><i class="fas fa-edit"></i></button>
-        <button class="delete-game" data-id="${game.id}" title="删除"><i class="fas fa-trash-alt"></i></button>
+        <div class="action-buttons">
+          <button class="edit-game" data-id="${game.id}" title="编辑"><i class="fas fa-edit"></i></button>
+          <button class="delete-game" data-id="${game.id}" title="删除"><i class="fas fa-trash-alt"></i></button>
+        </div>
       </td>
     `;
     

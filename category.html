@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>分类游戏 - LovexGames</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <!-- 导航栏 -->
+  <header class="site-header">
+    <div class="container">
+      <div class="logo">
+        <a href="index.html">
+          <img src="images/logo.svg" alt="LovexGames Logo">
+        </a>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="index.html">首页</a></li>
+          <li><a href="games.html">所有游戏</a></li>
+          <li><a href="about.html">关于我们</a></li>
+        </ul>
+      </nav>
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="搜索游戏...">
+        <button id="search-button"><i class="fas fa-search"></i></button>
+      </div>
+      <div class="mobile-menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容 -->
+  <main class="container">
+    <section class="category-games-section">
+      <h1 id="category-title">分类游戏</h1>
+      <div id="category-games" class="games-grid">
+        <!-- 游戏卡片将通过JavaScript动态加载 -->
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <img src="images/logo.svg" alt="LovexGames Logo">
+        </div>
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="games.html">所有游戏</a></li>
+            <li><a href="about.html">关于我们</a></li>
+            <li><a href="privacy.html">隐私政策</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h3>联系我们</h3>
+          <p>邮箱: info@lovexgames.com</p>
+          <div class="social-icons">
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 LovexGames. 保留所有权利。</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="js/games.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 获取URL参数中的分类ID
+      const urlParams = new URLSearchParams(window.location.search);
+      const categoryId = urlParams.get('id');
+      
+      if (categoryId) {
+        // 加载分类游戏
+        loadCategoryGames(categoryId);
+      }
+    });
+
+    // 加载分类游戏
+    function loadCategoryGames(categoryId) {
+      // 获取分类名称
+      const category = gameCategories.find(cat => cat.id === categoryId);
+      
+      if (category) {
+        // 更新页面标题
+        document.title = `${category.name} 游戏 - LovexGames`;
+        document.getElementById('category-title').textContent = `${category.name} 游戏`;
+        
+        // 获取该分类的游戏
+        const categoryGames = allGames.filter(game => 
+          game.category.toLowerCase() === category.name.toLowerCase()
+        );
+        
+        // 显示游戏
+        const gamesContainer = document.getElementById('category-games');
+        gamesContainer.innerHTML = '';
+        
+        if (categoryGames.length > 0) {
+          categoryGames.forEach(game => {
+            const gameCard = createGameCard(game);
+            gamesContainer.appendChild(gameCard);
+          });
+        } else {
+          gamesContainer.innerHTML = '<p class="no-games">该分类下暂无游戏。</p>';
+        }
+      }
+    }
+  </script>
+</body>
+</html>
