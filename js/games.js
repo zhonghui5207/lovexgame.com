@@ -21,197 +21,60 @@ function loadGamesFromStorage() {
       (!game.status || (game.status !== '推荐' && game.status !== '新游戏')) && 
       !game.isFeatured && !game.isNew
     );
-    
-    // 如果某个分类没有游戏，使用默认的硬编码游戏
-    if (featuredGames.length === 0) {
-      featuredGames = [
-        {
-          id: 'doors-online',
-          title: "Doors Online",
-          description: "A thrilling multiplayer horror game inspired by the popular Roblox experience.",
-          embedUrl: "https://www.crazygames.com/embed/doors-online",
-          thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Doors+Online",
-          category: "Horror",
-          rating: 4.7,
-          dateAdded: "March 2025",
-          instructions: "Use WASD or arrow keys to move your character. Press E to interact with objects and doors. Work together with other players to solve puzzles and survive the horrors that lurk behind each door.",
-          isFeatured: true,
-          isNew: false
-        }
-      ];
-    }
-    
-    // 确保每个分类至少有一些游戏显示
-    if (popularGames.length === 0) {
-      popularGames = getDefaultPopularGames();
-    }
-    
-    if (newGames.length === 0) {
-      newGames = getDefaultNewGames();
-    }
   } else {
-    // 如果没有存储的游戏数据，使用默认的硬编码游戏
-    featuredGames = [
-      {
-        id: 'doors-online',
-        title: "Doors Online",
-        description: "A thrilling multiplayer horror game inspired by the popular Roblox experience.",
-        embedUrl: "https://www.crazygames.com/embed/doors-online",
-        thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Doors+Online",
-        category: "Horror",
-        rating: 4.7,
-        dateAdded: "March 2025",
-        instructions: "Use WASD or arrow keys to move your character. Press E to interact with objects and doors. Work together with other players to solve puzzles and survive the horrors that lurk behind each door.",
-        isFeatured: true,
-        isNew: false
-      }
-    ];
-    
-    popularGames = getDefaultPopularGames();
-    newGames = getDefaultNewGames();
+    // 如果localStorage中没有游戏数据，尝试从games_for_import.json加载
+    loadGamesFromImportFile();
   }
 }
 
-// 获取默认的热门游戏
-function getDefaultPopularGames() {
-  return [
-    {
-      id: 'ragdoll-archers',
-      title: "Ragdoll Archers",
-      description: "Compete in archery battles with hilarious ragdoll physics.",
-      embedUrl: "https://www.crazygames.com/embed/ragdoll-archers",
-      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Ragdoll+Archers",
-      category: "Action",
-      rating: 4.5,
-      dateAdded: "March 2025",
-      instructions: "Use your mouse to aim and shoot arrows. Try to hit your opponents while avoiding their shots.",
-      isFeatured: false,
-      isNew: false
-    },
-    {
-      id: 'subway-surfers',
-      title: "Subway Surfers",
-      description: "Run as fast as you can through the subway in this endless runner game.",
-      embedUrl: "https://www.crazygames.com/embed/subway-surfers",
-      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Subway+Surfers",
-      category: "Action",
-      rating: 4.8,
-      dateAdded: "February 2025",
-      instructions: "Swipe up to jump, down to roll, and left or right to change lanes. Collect coins and power-ups while avoiding obstacles.",
-      isFeatured: false,
-      isNew: false
-    },
-    {
-      id: 'farm-merge-valley',
-      title: "Farm Merge Valley",
-      description: "Build and expand your farm by merging similar items in this relaxing game.",
-      embedUrl: "https://www.crazygames.com/embed/farm-merge-valley",
-      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Farm+Merge+Valley",
-      category: "Puzzle",
-      rating: 4.4,
-      dateAdded: "February 2025",
-      instructions: "Click and drag similar items to merge them into higher-level items. Manage your resources efficiently to expand your farm.",
-      isFeatured: false,
-      isNew: false
-    },
-    {
-      id: 'bloxd-io',
-      title: "Bloxd.io",
-      description: "A multiplayer block-building and survival game similar to Minecraft.",
-      embedUrl: "https://www.crazygames.com/embed/bloxdio",
-      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Bloxd.io",
-      category: "Adventure",
-      rating: 4.7,
-      dateAdded: "December 2024",
-      instructions: "Use WASD to move, Space to jump, and mouse to look around. Left-click to break blocks and right-click to place them.",
-      isFeatured: false,
-      isNew: false
-    },
-    {
-      id: 'slice-master',
-      title: "Slice Master",
-      description: "Test your precision by slicing through stacked objects in this satisfying game.",
-      embedUrl: "https://www.crazygames.com/embed/slice-master",
-      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Slice+Master",
-      category: "Puzzle",
-      rating: 4.4,
-      dateAdded: "February 2025",
-      instructions: "Drag your finger or mouse to slice through the stacked objects. Try to get as close to the perfect cut as possible.",
-      isFeatured: false,
-      isNew: false
-    }
-  ];
-}
-
-// 获取默认的新游戏
-function getDefaultNewGames() {
-  return [
-    {
-      id: 'farm-merge-valley',
-      title: "Farm Merge Valley",
-      description: "Build and expand your farm by merging similar items in this relaxing game.",
-      embedUrl: "https://www.crazygames.com/embed/farm-merge-valley",
-      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Farm+Merge+Valley",
-      category: "Puzzle",
-      rating: 4.6,
-      dateAdded: "March 2025",
-      instructions: "Drag and drop similar items to merge them into upgraded versions. Build and expand your farm to unlock new items and areas.",
-      isFeatured: false,
-      isNew: true
-    },
-    {
-      id: 'pirates-caribbean',
-      title: "Pirates of the Caribbean",
-      description: "Sail the high seas, battle other ships, and search for treasure in this pirate adventure game.",
-      embedUrl: "https://www.crazygames.com/embed/pirates-caribbean",
-      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Pirates+of+the+Caribbean",
-      category: "Adventure",
-      rating: 4.5,
-      dateAdded: "March 2025",
-      instructions: "Use WASD to navigate your ship. Press Space to fire cannons and E to interact with objects.",
-      isFeatured: false,
-      isNew: true
-    },
-    {
-      id: 'drift-hunters',
-      title: "Drift Hunters",
-      description: "Master the art of drifting in this realistic driving simulator.",
-      embedUrl: "https://www.crazygames.com/embed/drift-hunters",
-      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Drift+Hunters",
-      category: "Racing",
-      rating: 4.7,
-      dateAdded: "March 2025",
-      instructions: "Use arrow keys or WASD to control your car. Hold Space to use the handbrake for drifting.",
-      isFeatured: false,
-      isNew: true
-    },
-    {
-      id: 'slope-game',
-      title: "Slope Game",
-      description: "Test your reflexes in this fast-paced endless runner where you control a ball rolling down a slope.",
-      embedUrl: "https://www.crazygames.com/embed/slope-game",
-      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Slope+Game",
-      category: "Action",
-      rating: 4.4,
-      dateAdded: "March 2025",
-      instructions: "Use the arrow keys or A/D to move the ball left and right. Avoid obstacles and try to get as far as possible.",
-      isFeatured: false,
-      isNew: true
-    },
-    {
-      id: 'paper-io-2',
-      title: "Paper.io 2",
-      description: "Conquer territory by enclosing areas in this multiplayer IO game.",
-      embedUrl: "https://www.crazygames.com/embed/paper-io-2",
-      thumbnailUrl: "https://placehold.co/600x400/1a1b26/ffffff?text=Paper.io+2",
-      category: "IO",
-      rating: 4.6,
-      dateAdded: "March 2025",
-      instructions: "Use arrow keys or WASD to move your character. Encircle areas to claim them as your territory, but don't let others cut your trail!",
-      isFeatured: false,
-      isNew: true
-    }
-  ];
+// 从games_for_import.json加载游戏数据
+function loadGamesFromImportFile() {
+  console.log('尝试从games_for_import.json加载游戏数据');
+  
+  // 使用fetch API加载游戏数据
+  fetch('scripts/games_for_import.json')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('无法加载游戏数据文件');
+      }
+      return response.json();
+    })
+    .then(importGames => {
+      console.log('成功加载游戏数据:', importGames);
+      
+      // 为每个游戏添加ID（如果没有）
+      allGames = importGames.map(game => {
+        // 如果游戏没有ID，生成一个
+        if (!game.id) {
+          // 使用title和时间戳生成ID
+          const timestamp = Date.now();
+          const randomNum = Math.floor(Math.random() * 1000);
+          game.id = `game-${timestamp}-${randomNum}`;
+        }
+        return game;
+      });
+      
+      // 保存到localStorage
+      localStorage.setItem('lovexgames_games', JSON.stringify(allGames));
+      
+      // 根据状态分类游戏
+      featuredGames = allGames.slice(0, 3); // 前3个作为推荐游戏
+      newGames = allGames.slice(3, 8); // 接下来5个作为新游戏
+      popularGames = allGames.slice(8); // 剩余的作为热门游戏
+      
+      // 重新加载页面上的游戏
+      if (document.getElementById('featured-games') || 
+          document.getElementById('popular-games') || 
+          document.getElementById('new-games')) {
+        loadHomePageGames();
+      }
+    })
+    .catch(error => {
+      console.error('加载游戏数据失败:', error);
+      featuredGames = [];
+      popularGames = [];
+      newGames = [];
+    });
 }
 
 // Load games for the home page
@@ -292,7 +155,6 @@ const gameCategories = [
 ];
 
 // All games combined for search and reference
-// 更新全局allGames变量，而不是重新声明
 allGames = [...featuredGames, ...popularGames, ...newGames].filter((game, index, self) => 
   index === self.findIndex((g) => g.id === game.id)
 );
@@ -388,10 +250,99 @@ function createGameCard(game) {
 
 // Load game details for the game page
 function loadGameDetails(gameId) {
-  const game = allGames.find(g => g.id === gameId);
+  if (!gameId) {
+    console.error('No game ID provided');
+    document.getElementById('game-title').textContent = 'Game Not Found';
+    document.getElementById('game-desc').textContent = 'No game ID was provided. Please try another game.';
+    return;
+  }
+
+  // 如果allGames为空，先尝试加载游戏数据
+  if (allGames.length === 0) {
+    console.log('游戏数据为空，尝试加载数据');
+    loadGamesFromStorage();
+    
+    // 如果仍然为空，尝试从导入文件加载
+    if (allGames.length === 0) {
+      console.log('从localStorage加载失败，尝试从导入文件加载');
+      
+      // 使用Promise来处理异步加载
+      fetch('scripts/games_for_import.json')
+        .then(response => response.json())
+        .then(importGames => {
+          console.log('成功加载游戏数据:', importGames);
+          
+          // 为每个游戏添加ID（如果没有）
+          allGames = importGames.map(game => {
+            if (!game.id) {
+              const timestamp = Date.now();
+              const randomNum = Math.floor(Math.random() * 1000);
+              game.id = `game-${timestamp}-${randomNum}`;
+            }
+            return game;
+          });
+          
+          // 保存到localStorage
+          localStorage.setItem('lovexgames_games', JSON.stringify(allGames));
+          
+          // 加载完成后，继续处理游戏详情
+          processGameDetails(gameId);
+        })
+        .catch(error => {
+          console.error('加载游戏数据失败:', error);
+          document.getElementById('game-title').textContent = 'Error Loading Games';
+          document.getElementById('game-desc').textContent = 'Failed to load game data. Please try again later.';
+        });
+      return;
+    }
+  }
   
+  // 如果已经有游戏数据，直接处理
+  processGameDetails(gameId);
+}
+
+// 处理游戏详情（从loadGameDetails分离出来的逻辑）
+function processGameDetails(gameId) {
+  console.log('处理游戏详情，ID:', gameId);
+  console.log('可用游戏:', allGames.length);
+  console.log('游戏ID列表:', allGames.map(g => g.id));
+  
+  // 尝试直接匹配ID
+  let game = allGames.find(g => g.id === gameId);
+  console.log('直接匹配结果:', game);
+  
+  // 如果没有找到，尝试将URL中的下划线(_)替换为连字符(-)后匹配
+  if (!game && gameId.includes('_')) {
+    const convertedId = gameId.replace(/_/g, '-');
+    console.log('尝试转换后的ID:', convertedId);
+    game = allGames.find(g => g.id === convertedId);
+    console.log('转换ID匹配结果:', game);
+  }
+  
+  // 如果仍然没有找到，尝试提取时间戳部分进行匹配
+  if (!game && gameId.includes('_')) {
+    const parts = gameId.split('_');
+    if (parts.length >= 2) {
+      const timestamp = parts[1];
+      console.log('尝试通过时间戳匹配:', timestamp);
+      console.log('包含匹配时间戳的游戏:', allGames.filter(g => g.id && g.id.includes(timestamp)));
+      game = allGames.find(g => g.id && g.id.includes(timestamp));
+      console.log('时间戳匹配结果:', game);
+    }
+  }
+  
+  // 如果仍然没有找到，尝试按标题查找（最后的尝试）
+  if (!game && allGames.length > 0) {
+    console.log('尝试查找第一个游戏');
+    game = allGames[0]; // 使用第一个游戏作为后备
+    console.log('使用第一个游戏:', game);
+  }
+  
+  // 如果仍然没有找到游戏，记录错误并返回
   if (!game) {
-    console.error('Game not found:', gameId);
+    console.error('游戏未找到:', gameId);
+    document.getElementById('game-title').textContent = 'Game Not Found';
+    document.getElementById('game-desc').textContent = 'The requested game could not be found. Please try another game.';
     return;
   }
   
@@ -412,17 +363,43 @@ function loadGameDetails(gameId) {
     // Handle iframe error event
     gameFrame.onerror = function() {
       console.error('Error loading game frame');
-      showConnectionError(gameFrame, game);
+      loadOfflineMode(gameFrame, game);
     };
+    
+    // Additional error handling for iframe load failures
+    // Some browsers may not trigger onerror for iframes
+    const handleIframeError = function() {
+      if (gameFrame.contentDocument && gameFrame.contentDocument.body.innerHTML === '') {
+        console.error('Empty iframe content detected');
+        loadOfflineMode(gameFrame, game);
+        return true;
+      }
+      return false;
+    };
+    
+    // Set a timeout to check if the iframe loaded correctly
+    setTimeout(function() {
+      try {
+        // Try to access iframe content - if it fails, it's likely a cross-origin error
+        if (gameFrame.contentWindow.location.href) {
+          console.log('Game frame accessible');
+        }
+      } catch (e) {
+        console.error('Cross-origin error detected:', e);
+        if (!handleIframeError()) {
+          loadOfflineMode(gameFrame, game);
+        }
+      }
+    }, 5000); // 5 second timeout
   }
   
   // Update game details
   document.getElementById('game-title').textContent = game.title;
-  document.getElementById('game-category').textContent = game.category;
-  document.getElementById('game-rating').textContent = `Rating: ${game.rating}/5`;
-  document.getElementById('game-date').textContent = `Added: ${game.dateAdded}`;
-  document.getElementById('game-desc').textContent = game.description;
-  document.getElementById('game-instructions').textContent = game.instructions;
+  document.getElementById('game-category').textContent = game.category || 'Unknown';
+  document.getElementById('game-rating').textContent = `Rating: ${game.rating || '4.5'}/5`;
+  document.getElementById('game-date').textContent = `Added: ${game.dateAdded || 'March 2025'}`;
+  document.getElementById('game-desc').textContent = game.description || 'No description available.';
+  document.getElementById('game-instructions').textContent = game.instructions || 'No instructions available.';
   
   // Load related games (games in the same category)
   loadRelatedGames(game);
@@ -470,6 +447,14 @@ function showConnectionError(gameFrame, game) {
 
 // Load offline mode for the game
 function loadOfflineMode(gameFrame, game) {
+  console.log('Loading offline mode:', game.title);
+  
+  // 确保游戏对象有所有必要的属性
+  const gameTitle = game.title || 'Unknown Game';
+  const gameDesc = game.description || 'No description available.';
+  const gameInstructions = game.instructions || 'No instructions available.';
+  const gameThumbnail = game.thumbnailUrl || '';
+  
   gameFrame.srcdoc = `
     <html>
     <head>
@@ -481,28 +466,56 @@ function loadOfflineMode(gameFrame, game) {
           display: flex;
           flex-direction: column;
           align-items: center;
-          justify-content: center;
-          height: 100vh;
+          justify-content: flex-start;
+          min-height: 100vh;
           margin: 0;
           padding: 20px;
           text-align: center;
+          overflow-y: auto;
         }
         h2 {
-          margin-bottom: 15px;
+          margin: 20px 0;
+          font-size: 24px;
         }
         .game-image {
           max-width: 80%;
           height: auto;
           border-radius: 8px;
           margin: 20px 0;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        p {
+          max-width: 80%;
+          line-height: 1.6;
+          margin: 10px 0;
+        }
+        .instructions {
+          background-color: rgba(255, 255, 255, 0.1);
+          padding: 15px;
+          border-radius: 8px;
+          margin: 20px 0;
+          width: 80%;
+        }
+        .offline-badge {
+          background-color: #6c5ce7;
+          color: white;
+          padding: 5px 10px;
+          border-radius: 20px;
+          font-size: 12px;
+          margin-left: 10px;
+          display: inline-block;
         }
       </style>
     </head>
     <body>
-      <h2>${game.title} - Offline Mode</h2>
-      <img src="${game.thumbnailUrl}" alt="${game.title}" class="game-image">
-      <p>${game.description}</p>
-      <p><strong>How to play:</strong> ${game.instructions}</p>
+      <h2>${gameTitle} <span class="offline-badge">Offline Mode</span></h2>
+      ${gameThumbnail ? `<img src="${gameThumbnail}" alt="${gameTitle}" class="game-image">` : ''}
+      <p>${gameDesc}</p>
+      <div class="instructions">
+        <h3>How to Play</h3>
+        <p>${gameInstructions}</p>
+      </div>
+      <p>Game cannot be loaded at this time. Please try again later or refresh the page.</p>
     </body>
     </html>
   `;
