@@ -147,6 +147,7 @@
             gap: 20px;
             margin: 20px 0;
             padding: 0;
+            width: 100%;
         }
         
         .game-card {
@@ -160,6 +161,7 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            max-width: 100%;
         }
         
         .game-card:hover {
@@ -444,6 +446,9 @@
                     const embedUrl = game.embedUrl || '';
                     const embedUrlDisplay = embedUrl.length > 30 ? embedUrl.substring(0, 30) + '...' : embedUrl;
                     
+                    // 处理分类，确保有默认值
+                    const category = game.category && game.category.trim() !== '' ? game.category : '未分类';
+                    
                     gameCard.innerHTML = `
                         <div class="game-select">
                             <label class="checkbox-container">
@@ -456,7 +461,7 @@
                         </div>
                         <div class="game-info">
                             <h3 title="${game.title}">${game.title}</h3>
-                            <p class="game-category">${game.category || '未分类'}</p>
+                            <p class="game-category">${category}</p>
                             <p class="game-embed" title="${embedUrl}">${embedUrlDisplay}</p>
                         </div>
                     `;
@@ -511,9 +516,51 @@
                 }
             }
             
+            // 加载本地数据
+            function loadLocalGames() {
+                crawlerLog.clear();
+                crawlerLog.info('开始加载游戏数据...');
+                
+                try {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('GET', '../scripts/games_for_import.json', false); // 同步请求
+                    xhr.send(null);
+                    
+                    if (xhr.status === 200) {
+                        try {
+                            gamesData = JSON.parse(xhr.responseText);
+                            renderGames(gamesData);
+                            crawlerLog.success(`成功加载 ${gamesData.length} 个游戏`);
+                        } catch (e) {
+                            crawlerLog.error(`解析JSON数据失败: ${e.message}`);
+                            console.error('JSON解析错误:', e);
+                            loadFallbackData();
+                        }
+                    } else {
+                        crawlerLog.error(`加载游戏数据失败: 状态码 ${xhr.status}`);
+                        console.error('HTTP错误:', xhr.status);
+                        loadFallbackData();
+                    }
+                } catch (error) {
+                    crawlerLog.error(`加载游戏数据失败: ${error.message}`);
+                    console.error('加载错误详情:', error);
+                    
+                    // 如果XMLHttpRequest失败，尝试使用硬编码的数据
+                    loadFallbackData();
+                }
+            }
+            
             // 绑定事件
-            document.getElementById('refresh-data-btn').addEventListener('click', refreshGameData);
-            document.getElementById('import-selected-btn').addEventListener('click', importSelectedGames);
+            const refreshDataBtn = document.getElementById('refresh-data-btn');
+            const importSelectedBtn = document.getElementById('import-selected-btn');
+            
+            if (refreshDataBtn) {
+                refreshDataBtn.addEventListener('click', refreshGameData);
+            }
+            
+            if (importSelectedBtn) {
+                importSelectedBtn.addEventListener('click', importSelectedGames);
+            }
             
             // 自动加载游戏数据
             loadLocalGames();
@@ -524,67 +571,26 @@
             crawlerLog.clear();
             crawlerLog.info('正在刷新游戏数据...');
             
-            // 使用XMLHttpRequest加载JSON文件
-            try {
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', '../scripts/games_for_import.json?t=' + new Date().getTime(), false); // 同步请求
-                xhr.send(null);
-                
-                if (xhr.status === 200) {
-                    try {
-                        const latestData = JSON.parse(xhr.responseText);
-                        gamesData = latestData;
-                        renderGames(gamesData);
-                        crawlerLog.success(`成功刷新数据，加载了 ${gamesData.length} 个游戏`);
-                    } catch (e) {
-                        crawlerLog.error(`解析JSON数据失败: ${e.message}`);
-                        console.error('JSON解析错误:', e);
+            // 使用异步请求加载JSON文件
+            fetch('../scripts/games_for_import.json?t=' + new Date().getTime())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP错误: ${response.status}`);
                     }
-                } else {
-                    crawlerLog.error(`刷新游戏数据失败: 状态码 ${xhr.status}`);
-                    console.error('HTTP错误:', xhr.status);
-                }
-            } catch (error) {
-                crawlerLog.error(`刷新游戏数据失败: ${error.message}`);
-                console.error('刷新错误详情:', error);
-                
-                // 如果XMLHttpRequest失败，尝试使用硬编码的数据
-                loadFallbackData();
-            }
-        }
-        
-        // 加载本地数据
-        function loadLocalGames() {
-            crawlerLog.clear();
-            crawlerLog.info('开始加载游戏数据...');
-            
-            try {
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', '../scripts/games_for_import.json', false); // 同步请求
-                xhr.send(null);
-                
-                if (xhr.status === 200) {
-                    try {
-                        gamesData = JSON.parse(xhr.responseText);
-                        renderGames(gamesData);
-                        crawlerLog.success(`成功加载 ${gamesData.length} 个游戏`);
-                    } catch (e) {
-                        crawlerLog.error(`解析JSON数据失败: ${e.message}`);
-                        console.error('JSON解析错误:', e);
-                        loadFallbackData();
-                    }
-                } else {
-                    crawlerLog.error(`加载游戏数据失败: 状态码 ${xhr.status}`);
-                    console.error('HTTP错误:', xhr.status);
+                    return response.json();
+                })
+                .then(latestData => {
+                    gamesData = latestData;
+                    renderGames(gamesData);
+                    crawlerLog.success(`成功刷新数据，加载了 ${gamesData.length} 个游戏`);
+                })
+                .catch(error => {
+                    crawlerLog.error(`刷新游戏数据失败: ${error.message}`);
+                    console.error('刷新错误详情:', error);
+                    
+                    // 如果fetch失败，尝试使用硬编码的数据
                     loadFallbackData();
-                }
-            } catch (error) {
-                crawlerLog.error(`加载游戏数据失败: ${error.message}`);
-                console.error('加载错误详情:', error);
-                
-                // 如果XMLHttpRequest失败，尝试使用硬编码的数据
-                loadFallbackData();
-            }
+                });
         }
         
         // 加载备用数据（当无法从文件加载时）
@@ -639,67 +645,94 @@
                 }
             });
             
-            // 获取现有游戏数据
-            let existingGames = JSON.parse(localStorage.getItem('lovexgames_games')) || [];
-            
-            const result = {
-                added: 0,
-                updated: 0,
-                failed: 0
-            };
-            
-            // 处理每个选中的游戏
-            selectedGames.forEach(game => {
+            try {
+                // 获取现有游戏数据
+                let existingGames = [];
                 try {
-                    // 为游戏添加必要的字段
-                    const newGame = {
-                        id: generateGameId(),
-                        title: game.title,
-                        description: game.description,
-                        category: game.category || '未分类',
-                        thumbnailUrl: game.thumbnailUrl,
-                        embedUrl: game.embedUrl,
-                        instructions: game.instructions || '暂无说明',
-                        rating: 4.5,
-                        isFeatured: false,
-                        isNew: true,
-                        addedDate: new Date().toISOString().split('T')[0]
-                    };
-                    
-                    // 检查游戏是否已存在（通过标题匹配）
-                    const existingIndex = existingGames.findIndex(g => g.title === game.title);
-                    
-                    if (existingIndex >= 0) {
-                        // 更新现有游戏
-                        existingGames[existingIndex] = {
-                            ...existingGames[existingIndex],
-                            description: newGame.description,
-                            thumbnailUrl: newGame.thumbnailUrl,
-                            embedUrl: newGame.embedUrl,
-                            instructions: newGame.instructions
-                        };
-                        result.updated++;
-                    } else {
-                        // 添加新游戏
-                        existingGames.push(newGame);
-                        result.added++;
-                    }
-                } catch (error) {
-                    console.error('导入游戏失败:', error, game);
-                    result.failed++;
+                    const storedGames = localStorage.getItem('lovexgames_games');
+                    existingGames = storedGames ? JSON.parse(storedGames) : [];
+                } catch (e) {
+                    crawlerLog.error(`读取本地游戏数据失败: ${e.message}`);
+                    existingGames = [];
                 }
-            });
-            
-            // 保存更新后的游戏数据
-            localStorage.setItem('lovexgames_games', JSON.stringify(existingGames));
-            
-            // 显示导入结果
-            crawlerLog.success(`导入完成: 新增 ${result.added} 个, 更新 ${result.updated} 个, 失败 ${result.failed} 个`);
-            
-            // 导入完成后，跳转到游戏管理页面
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 2000);
+                
+                const result = {
+                    added: 0,
+                    updated: 0,
+                    failed: 0
+                };
+                
+                // 处理每个选中的游戏
+                selectedGames.forEach(game => {
+                    try {
+                        // 处理YouTube嵌入URL，转换为游戏可用的嵌入URL
+                        let embedUrl = game.embedUrl;
+                        if (embedUrl && embedUrl.includes('youtube.com/embed/')) {
+                            // 记录原始YouTube URL
+                            crawlerLog.info(`检测到YouTube URL: ${embedUrl}`);
+                        }
+                        
+                        // 为游戏添加必要的字段
+                        const newGame = {
+                            id: generateGameId(),
+                            title: game.title,
+                            description: game.description || '暂无描述',
+                            category: game.category && game.category.trim() !== '' ? game.category : '未分类',
+                            thumbnailUrl: game.thumbnailUrl,
+                            embedUrl: embedUrl,
+                            instructions: game.instructions || '暂无说明',
+                            rating: 4.5,
+                            isFeatured: false,
+                            isNew: true,
+                            addedDate: new Date().toISOString().split('T')[0],
+                            source: game.source || '爬虫导入'
+                        };
+                        
+                        // 检查游戏是否已存在（通过标题匹配）
+                        const existingIndex = existingGames.findIndex(g => g.title === game.title);
+                        
+                        if (existingIndex >= 0) {
+                            // 更新现有游戏
+                            existingGames[existingIndex] = {
+                                ...existingGames[existingIndex],
+                                description: newGame.description,
+                                thumbnailUrl: newGame.thumbnailUrl,
+                                embedUrl: newGame.embedUrl,
+                                instructions: newGame.instructions,
+                                source: newGame.source
+                            };
+                            result.updated++;
+                        } else {
+                            // 添加新游戏
+                            existingGames.push(newGame);
+                            result.added++;
+                        }
+                    } catch (error) {
+                        console.error('导入游戏失败:', error, game);
+                        crawlerLog.error(`导入游戏 "${game.title}" 失败: ${error.message}`);
+                        result.failed++;
+                    }
+                });
+                
+                // 保存更新后的游戏数据
+                try {
+                    localStorage.setItem('lovexgames_games', JSON.stringify(existingGames));
+                    
+                    // 显示导入结果
+                    crawlerLog.success(`导入完成: 新增 ${result.added} 个, 更新 ${result.updated} 个, 失败 ${result.failed} 个`);
+                    
+                    // 导入完成后，跳转到游戏管理页面
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } catch (e) {
+                    crawlerLog.error(`保存游戏数据失败: ${e.message}`);
+                    alert('保存游戏数据失败，可能是由于存储空间不足。请尝试减少导入的游戏数量。');
+                }
+            } catch (e) {
+                crawlerLog.error(`导入过程出错: ${e.message}`);
+                console.error('导入过程错误:', e);
+            }
         }
         
         // 生成唯一游戏ID
