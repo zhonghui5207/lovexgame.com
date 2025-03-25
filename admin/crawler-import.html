@@ -316,6 +316,109 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        /* 爬虫控制面板样式 */
+        .crawler-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .crawler-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .crawler-section h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            border-color: var(--admin-primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+        
+        .crawler-section button {
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .crawler-controls {
+                flex-direction: column;
+            }
+            
+            .crawler-section {
+                min-width: 100%;
+            }
+        }
+        
+        /* 爬虫状态指示器 */
+        .crawler-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+        
+        .status-idle {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        
+        .status-running {
+            background-color: #cff4fc;
+            color: #055160;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .status-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        
+        /* 游戏卡片选择器 */
     </style>
 </head>
 <body class="admin-page">
@@ -347,6 +450,51 @@
             </div>
         </header>
         <main class="admin-main">
+            <!-- 新增爬虫控制面板 -->
+            <div class="admin-card" id="crawler-control-panel">
+                <div class="admin-card-header">
+                    <h2>爬虫控制</h2>
+                </div>
+                <div class="admin-card-body">
+                    <div class="crawler-controls">
+                        <div class="crawler-section">
+                            <h3>按类型爬取</h3>
+                            <div class="form-group">
+                                <label for="game-category">游戏类型：</label>
+                                <select id="game-category" class="form-control">
+                                    <option value="">所有类型</option>
+                                    <option value="casual">休闲游戏</option>
+                                    <option value="action">动作游戏</option>
+                                    <option value="adventure">冒险游戏</option>
+                                    <option value="puzzle">益智游戏</option>
+                                    <option value="shooting">射击游戏</option>
+                                    <option value="sports">体育游戏</option>
+                                    <option value="multiplayer">多人游戏</option>
+                                    <option value="html5">HTML5游戏</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="game-limit">爬取数量：</label>
+                                <input type="number" id="game-limit" class="form-control" value="10" min="1" max="50">
+                            </div>
+                            <button id="start-crawler-btn" class="primary-btn">
+                                <i class="fas fa-spider"></i> 开始爬取
+                            </button>
+                        </div>
+                        <div class="crawler-section">
+                            <h3>爬取指定游戏</h3>
+                            <div class="form-group">
+                                <label for="game-url">游戏URL：</label>
+                                <input type="text" id="game-url" class="form-control" placeholder="https://www.crazygames.com/game/example-game">
+                            </div>
+                            <button id="crawl-specific-game-btn" class="primary-btn">
+                                <i class="fas fa-search"></i> 爬取指定游戏
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="admin-card" id="games-list-container">
                 <div class="admin-card-header">
                     <h2>游戏列表</h2>
@@ -362,6 +510,8 @@
                 </div>
                 <div class="admin-card-body">
                     <div class="games-list" id="games-list"></div>
+                    <div class="admin-actions text-center" style="margin-top: 20px;">
+                    </div>
                 </div>
             </div>
             <div class="crawler-log" id="crawler-log">
@@ -370,83 +520,46 @@
         </main>
     </div>
 
-    <script src="../js/admin.js"></script>
     <script>
-        // 全局变量
-        let crawlerLog;
-        let gamesData = [];
-        
-        // 初始化页面
-        document.addEventListener('DOMContentLoaded', function() {
-            // 检查登录状态
-            checkAuth();
+        // 渲染游戏列表
+        function renderGames(games) {
+            console.log('开始渲染游戏列表，游戏数量:', games.length);
+            console.log('游戏数据示例:', JSON.stringify(games.slice(0, 2)));
             
-            // 初始化日志
-            crawlerLog = {
-                container: document.getElementById('crawler-log'),
-                
-                log: function(message, type = 'info') {
-                    if (!this.container) return;
-                    
-                    const now = new Date();
-                    const timestamp = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
-                    
-                    const entry = document.createElement('div');
-                    entry.className = `log-entry log-${type}`;
-                    entry.textContent = `${timestamp} ${message}`;
-                    
-                    this.container.appendChild(entry);
-                    this.container.scrollTop = this.container.scrollHeight;
-                },
-                
-                info: function(message) {
-                    this.log(message, 'info');
-                },
-                
-                warning: function(message) {
-                    this.log(message, 'warning');
-                },
-                
-                error: function(message) {
-                    this.log(message, 'error');
-                },
-                
-                success: function(message) {
-                    this.log(message, 'success');
-                },
-                
-                clear: function() {
-                    if (!this.container) return;
-                    this.container.innerHTML = '';
-                }
-            };
+            // 获取游戏列表容器
+            const gamesContainer = document.getElementById('games-list');
+            if (!gamesContainer) {
+                console.error('找不到游戏列表容器元素 #games-list');
+                return;
+            }
             
-            // 渲染游戏列表
-            function renderGames(games) {
-                console.log("渲染游戏列表:", games); // 添加日志
-                
-                const gamesContainer = document.getElementById('games-list');
-                const gamesCount = document.getElementById('games-count');
-                
-                if (!gamesContainer || !gamesCount) {
-                    console.error("找不到游戏列表容器或计数元素");
-                    return;
-                }
-                
-                // 更新游戏计数
+            // 更新游戏计数
+            const gamesCount = document.getElementById('games-count');
+            if (gamesCount) {
                 gamesCount.textContent = `${games.length} 个游戏`;
-                
-                // 清空现有内容
-                gamesContainer.innerHTML = '';
-                
-                // 确保games是一个数组
-                if (!Array.isArray(games)) {
-                    console.error("游戏数据不是数组:", games);
-                    games = [];
-                }
-                
-                // 添加游戏卡片
-                games.forEach((game, index) => {
+                console.log('更新游戏计数为:', games.length);
+            } else {
+                console.error('找不到游戏计数元素 #games-count');
+            }
+            
+            // 清空容器
+            gamesContainer.innerHTML = '';
+            console.log('游戏列表容器已清空');
+            
+            // 如果没有游戏，显示提示信息
+            if (!games || games.length === 0) {
+                console.warn('没有游戏数据可显示');
+                gamesContainer.innerHTML = '<div class="no-games">没有找到游戏数据</div>';
+                return;
+            }
+            
+            console.log('开始创建游戏卡片，总数:', games.length);
+            
+            // 添加游戏卡片
+            games.forEach((game, index) => {
+                try {
+                    console.log(`处理游戏 ${index + 1}/${games.length}: ${game.title || '无标题'}`);
+                    
                     const gameCard = document.createElement('div');
                     gameCard.className = 'game-card selected';  // 默认选中状态
                     
@@ -501,235 +614,489 @@
                     checkbox.addEventListener('change', function() {
                         gameCard.classList.toggle('selected', this.checked);
                     });
-                });
-                
-                // 显示游戏列表容器
-                document.getElementById('games-list-container').style.display = 'block';
-                
-                // 绑定全选/取消全选事件
-                const selectAllCheckbox = document.getElementById('select-all-games');
-                if (selectAllCheckbox) {
-                    selectAllCheckbox.checked = true;  // 默认全选
-                    
-                    // 触发一次change事件，确保所有游戏卡片被选中
-                    const event = new Event('change');
-                    selectAllCheckbox.dispatchEvent(event);
-                    
-                    selectAllCheckbox.addEventListener('change', function() {
-                        const checkboxes = document.querySelectorAll('.game-checkbox');
-                        const gameCards = document.querySelectorAll('.game-card');
-                        
-                        checkboxes.forEach((checkbox, index) => {
-                            checkbox.checked = this.checked;
-                            gameCards[index].classList.toggle('selected', this.checked);
-                        });
-                    });
-                }
-                
-                console.log("游戏列表渲染完成，共", games.length, "个游戏"); // 添加日志
-            }
-            
-            // 加载本地数据
-            function loadLocalGames() {
-                crawlerLog.clear();
-                crawlerLog.info('开始加载游戏数据...');
-                
-                try {
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('GET', '../scripts/games_for_import.json', false); // 同步请求
-                    xhr.send(null);
-                    
-                    if (xhr.status === 200) {
-                        try {
-                            gamesData = JSON.parse(xhr.responseText);
-                            renderGames(gamesData);
-                            crawlerLog.success(`成功加载 ${gamesData.length} 个游戏`);
-                        } catch (e) {
-                            crawlerLog.error(`解析JSON数据失败: ${e.message}`);
-                            console.error('JSON解析错误:', e);
-                            loadFallbackData();
-                        }
-                    } else {
-                        crawlerLog.error(`加载游戏数据失败: 状态码 ${xhr.status}`);
-                        console.error('HTTP错误:', xhr.status);
-                        loadFallbackData();
-                    }
                 } catch (error) {
-                    crawlerLog.error(`加载游戏数据失败: ${error.message}`);
-                    console.error('加载错误详情:', error);
-                    
-                    // 如果XMLHttpRequest失败，尝试使用硬编码的数据
-                    loadFallbackData();
+                    console.error(`渲染游戏 ${index} 时出错:`, error, '游戏数据:', game);
                 }
+            });
+            
+            console.log('游戏卡片创建完成，总数:', games.length);
+            
+            // 绑定全选/取消全选事件
+            const selectAllCheckbox = document.getElementById('select-all-games');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = true;  // 默认全选
+                console.log('设置全选复选框为选中状态');
+                
+                // 触发一次change事件，确保所有游戏卡片被选中
+                const event = new Event('change');
+                selectAllCheckbox.dispatchEvent(event);
+                
+                selectAllCheckbox.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('.game-checkbox');
+                    const gameCards = document.querySelectorAll('.game-card');
+                    
+                    checkboxes.forEach((checkbox, index) => {
+                        checkbox.checked = this.checked;
+                        gameCards[index].classList.toggle('selected', this.checked);
+                    });
+                });
+            } else {
+                console.warn('找不到全选复选框元素 #select-all-games');
             }
             
-            // 绑定事件
-            const refreshDataBtn = document.getElementById('refresh-data-btn');
-            const importSelectedBtn = document.getElementById('import-selected-btn');
+            console.log("游戏列表渲染完成，共", games.length, "个游戏");
+        }
+        
+        // 加载本地数据
+        function loadLocalGames() {
+            console.log('开始加载游戏数据...');
+            crawlerLog.clear();
+            crawlerLog.info('开始加载游戏数据...');
             
-            if (refreshDataBtn) {
-                refreshDataBtn.addEventListener('click', refreshGameData);
+            // 使用XMLHttpRequest加载游戏数据
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '../scripts/games_for_import.json', true);
+            
+            // 添加事件监听器
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        console.log('收到游戏数据，开始解析...');
+                        // 解析JSON数据
+                        const jsonData = JSON.parse(xhr.responseText);
+                        
+                        console.log('游戏数据解析完成，数据类型:', typeof jsonData, '是否为数组:', Array.isArray(jsonData), '长度:', jsonData.length);
+                        console.log('游戏数据前3项:', JSON.stringify(jsonData.slice(0, 3)));
+                        
+                        // 检查是否有游戏数据
+                        if (jsonData && Array.isArray(jsonData)) {
+                            gamesData = jsonData;
+                            console.log(`成功加载 ${gamesData.length} 个游戏，开始渲染...`);
+                            crawlerLog.success(`成功加载 ${gamesData.length} 个游戏`);
+                            renderGames(gamesData);
+                        } else {
+                            console.error('游戏数据格式不正确:', jsonData);
+                            crawlerLog.error('游戏数据格式不正确');
+                        }
+                    } catch (error) {
+                        console.error('解析游戏数据失败:', error, '原始数据:', xhr.responseText.substring(0, 200) + '...');
+                        crawlerLog.error(`解析游戏数据失败: ${error.message}`);
+                    }
+                } else {
+                    console.error('读取游戏数据失败:', xhr.status, xhr.statusText);
+                    crawlerLog.error(`读取游戏数据失败: 状态码 ${xhr.status}`);
+                }
+            };
+            
+            xhr.onerror = function(e) {
+                console.error('请求游戏数据失败:', e);
+                crawlerLog.error('请求游戏数据失败');
+            };
+            
+            // 发送请求
+            xhr.send();
+            console.log('游戏数据请求已发送');
+        }
+        
+        // 全局变量
+        let gamesData = [];
+        let crawlerLog;
+        
+        // 初始化爬虫日志
+        function initCrawlerLog() {
+            crawlerLog = {
+                container: document.getElementById('crawler-log'),
+                log: function(message, type = 'info') {
+                    if (!this.container) {
+                        console.error('日志容器不存在');
+                        return;
+                    }
+                    
+                    const now = new Date();
+                    const timestamp = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
+                    
+                    const entry = document.createElement('div');
+                    entry.className = `log-entry log-${type}`;
+                    entry.textContent = `${timestamp} ${message}`;
+                    
+                    this.container.appendChild(entry);
+                    this.container.scrollTop = this.container.scrollHeight;
+                },
+                info: function(message) { this.log(message, 'info'); },
+                warning: function(message) { this.log(message, 'warning'); },
+                error: function(message) { this.log(message, 'error'); },
+                success: function(message) { this.log(message, 'success'); },
+                clear: function() {
+                    if (!this.container) return;
+                    this.container.innerHTML = '';
+                }
+            };
+        }
+        
+        // 检查用户是否已登录
+        function checkAuth() {
+            // 简单的身份验证检查，实际项目中应该使用更安全的方法
+            console.log('检查登录状态...');
+            
+            // 这里只是一个示例，实际应用中应该有更完善的身份验证机制
+            // 如果未登录，重定向到登录页面
+            /*
+            const isLoggedIn = localStorage.getItem('admin_logged_in');
+            if (!isLoggedIn) {
+                window.location.href = 'login.html';
+                return false;
             }
+            */
             
-            if (importSelectedBtn) {
-                importSelectedBtn.addEventListener('click', importSelectedGames);
-            }
+            return true;
+        }
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            initCrawlerLog();
+            // 检查登录状态
+            checkAuth();
             
-            // 自动加载游戏数据
-            loadLocalGames();
+            // 加载游戏数据
+            setTimeout(loadLocalGames, 1500);
+            
+            // 绑定按钮事件
+            document.getElementById('start-crawler-btn').addEventListener('click', function() {
+                const category = document.getElementById('game-category').value;
+                const limit = document.getElementById('game-limit').value;
+                crawlByCategory(category, limit);
+            });
+            document.getElementById('crawl-specific-game-btn').addEventListener('click', crawlSpecificGame);
+            document.getElementById('import-selected-btn').addEventListener('click', importSelectedGames);
+            document.getElementById('refresh-data-btn').addEventListener('click', refreshGameData);
+            
+            console.log('页面初始化完成，已绑定所有事件处理程序');
         });
         
         // 刷新游戏数据
         function refreshGameData() {
-            crawlerLog.clear();
+            console.log('刷新游戏数据...');
             crawlerLog.info('正在刷新游戏数据...');
             
-            // 直接调用loadLocalGames函数，确保使用相同的逻辑
+            // 清空当前数据
+            gamesData = [];
+            
+            // 重新加载游戏数据
             loadLocalGames();
             
-            // 添加成功消息
-            crawlerLog.success('游戏数据刷新成功');
-        }
-        
-        // 加载备用数据（当无法从文件加载时）
-        function loadFallbackData() {
-            crawlerLog.warning('使用备用数据...');
-            
-            // 硬编码的备用数据
-            gamesData = [
-                {
-                    "title": "Geometry Game",
-                    "category": "冒险",
-                    "thumbnailUrl": "https://images.crazygames.com/geometrygame.png?auto=format,compress&q=75&cs=strip",
-                    "embedUrl": "https://html5.gamemondi.com/game/2b8a58d6-17c4-4641-a814-6839d6c83d51/",
-                    "description": "在这个几何冒险游戏中，控制一个方块角色，跳跃并避开障碍物，收集星星并到达终点。"
-                },
-                {
-                    "title": "Drift Boss",
-                    "category": "赛车",
-                    "thumbnailUrl": "https://images.crazygames.com/drift-boss.png?auto=format,compress&q=75&cs=strip",
-                    "embedUrl": "https://html5.gamemondi.com/game/1d5c1c8e-99d7-4715-a6a1-d5c66e6ec6d5/",
-                    "description": "在这个刺激的赛车游戏中，控制一辆汽车在弯曲的赛道上漂移，尽可能地走得更远。"
-                },
-                {
-                    "title": "Bubble Shooter",
-                    "category": "益智",
-                    "thumbnailUrl": "https://images.crazygames.com/bubble-shooter.png?auto=format,compress&q=75&cs=strip",
-                    "embedUrl": "https://html5.gamemondi.com/game/7e7f71f3-6c6d-4a5a-a5f0-e58a3a6316b0/",
-                    "description": "经典的泡泡射击游戏，发射彩色泡泡，匹配三个或更多相同颜色的泡泡使它们消失。"
+            // 添加一个延迟检查，确保数据已加载
+            setTimeout(function() {
+                console.log('延迟检查游戏数据，当前数据量:', gamesData.length);
+                if (gamesData.length === 0) {
+                    console.warn('延迟检查发现游戏数据为空，尝试再次加载...');
+                    loadLocalGames();
                 }
-            ];
+            }, 2000);
             
-            renderGames(gamesData);
-            crawlerLog.info(`已加载 ${gamesData.length} 个备用游戏数据`);
+            crawlerLog.success('游戏数据已刷新');
         }
         
-        // 导入选中的游戏
-        function importSelectedGames() {
-            const checkboxes = document.querySelectorAll('#games-list .game-checkbox:checked');
+        // 按类别爬取游戏
+        function crawlByCategory(category, limit) {
+            // 获取类别和数量
+            const gameCategory = category || document.getElementById('game-category').value;
+            const gameLimit = limit || document.getElementById('game-limit').value;
             
-            if (checkboxes.length === 0) {
-                crawlerLog.warning('请至少选择一个游戏进行导入');
+            // 验证数量
+            if (isNaN(gameLimit) || gameLimit < 1 || gameLimit > 50) {
+                crawlerLog.error('爬取数量必须在1-50之间');
                 return;
             }
             
-            crawlerLog.info(`开始导入 ${checkboxes.length} 个游戏...`);
+            // 禁用按钮，防止重复点击
+            const startBtn = document.getElementById('start-crawler-btn');
+            startBtn.disabled = true;
+            startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 爬取中...';
             
+            // 显示状态
+            crawlerLog.clear();
+            crawlerLog.info(`开始按类别爬取游戏: 类别=${gameCategory || '所有'}, 数量=${gameLimit}`);
+            
+            // 发送请求到爬虫API
+            fetch('http://localhost:8001/api/crawler/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    category: gameCategory,
+                    limit: parseInt(gameLimit)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    crawlerLog.success(data.message);
+                    // 刷新游戏列表
+                    loadLocalGames();
+                } else {
+                    crawlerLog.error(`爬取失败: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                crawlerLog.error(`请求错误: ${error.message}`);
+                crawlerLog.error('请确保爬虫API服务器正在运行（python scripts/crawler_api.py）');
+            })
+            .finally(() => {
+                // 恢复按钮状态
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<i class="fas fa-spider"></i> 开始爬取';
+            });
+        }
+        
+        // 启动爬虫
+        function startCrawler() {
+            // 获取选择的游戏类型和数量
+            const category = document.getElementById('game-category').value;
+            const limit = document.getElementById('game-limit').value;
+            
+            // 验证输入
+            if (limit < 1 || limit > 50) {
+                crawlerLog.error('爬取数量必须在1-50之间');
+                return;
+            }
+            
+            // 显示状态
+            crawlerLog.clear();
+            crawlerLog.info(`开始爬取游戏: 类型=${category || '所有'}, 数量=${limit}`);
+            
+            // 禁用按钮，防止重复点击
+            const startBtn = document.getElementById('start-crawler-btn');
+            startBtn.disabled = true;
+            startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 爬取中...';
+            
+            // 发送请求到爬虫API
+            fetch('http://localhost:8001/api/crawler/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    category: category,
+                    limit: parseInt(limit)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    crawlerLog.success(data.message);
+                    // 刷新游戏列表
+                    loadLocalGames();
+                } else {
+                    crawlerLog.error(`爬取失败: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                crawlerLog.error(`请求错误: ${error.message}`);
+                crawlerLog.error('请确保爬虫API服务器正在运行（python scripts/crawler_api.py）');
+            })
+            .finally(() => {
+                // 恢复按钮状态
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<i class="fas fa-spider"></i> 开始爬取';
+            });
+        }
+        
+        // 爬取指定游戏
+        function crawlSpecificGame() {
+            // 获取游戏URL
+            const gameUrl = document.getElementById('game-url').value.trim();
+            
+            // 验证输入
+            if (!gameUrl) {
+                crawlerLog.error('请输入有效的游戏URL');
+                return;
+            }
+            
+            // 验证URL格式
+            if (!gameUrl.startsWith('https://www.crazygames.com/game/')) {
+                crawlerLog.warning('URL格式可能不正确，请确保URL格式为: https://www.crazygames.com/game/游戏名');
+            }
+            
+            // 禁用按钮，防止重复点击
+            const crawlBtn = document.getElementById('crawl-specific-game-btn');
+            crawlBtn.disabled = true;
+            crawlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 爬取中...';
+            
+            // 发送请求到爬虫API
+            fetch('http://localhost:8001/api/crawler/crawl-url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url: gameUrl
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    crawlerLog.success(data.message);
+                    // 刷新游戏列表
+                    loadLocalGames();
+                } else {
+                    crawlerLog.error(`爬取失败: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                crawlerLog.error(`请求错误: ${error.message}`);
+                crawlerLog.error('请确保爬虫API服务器正在运行（python scripts/crawler_api.py）');
+            })
+            .finally(() => {
+                // 恢复按钮状态
+                crawlBtn.disabled = false;
+                crawlBtn.innerHTML = '<i class="fas fa-search"></i> 爬取指定游戏';
+            });
+        }
+        
+        // 启动爬虫API服务器的函数
+        function startCrawlerAPI() {
+            crawlerLog.info('正在尝试启动爬虫API服务器...');
+            
+            // 这里可以添加代码来启动爬虫API服务器
+            // 由于浏览器安全限制，可能需要通过其他方式启动服务器
+            crawlerLog.warning('请手动启动爬虫API服务器:');
+            crawlerLog.warning('1. 打开终端');
+            crawlerLog.warning('2. 切换到网站目录');
+            crawlerLog.warning('3. 运行命令: python scripts/crawler_api.py');
+        }
+        
+        // 检查爬虫API服务器状态
+        function checkCrawlerAPIStatus() {
+            // 确保crawlerLog已初始化
+            if (!crawlerLog) {
+                console.error('crawlerLog未初始化，延迟检查API状态');
+                setTimeout(checkCrawlerAPIStatus, 1000);
+                return;
+            }
+            
+            console.log('检查爬虫API服务器状态...');
+            
+            fetch('http://localhost:8001/api/crawler/status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        crawlerLog.success('爬虫API服务器已连接');
+                        document.querySelectorAll('.crawler-section button').forEach(btn => {
+                            btn.disabled = false;
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('API服务器连接错误:', error);
+                    crawlerLog.error('无法连接到爬虫API服务器');
+                    crawlerLog.info('请先启动爬虫API服务器');
+                    startCrawlerAPI();
+                    
+                    // 禁用爬虫按钮
+                    document.querySelectorAll('.crawler-section button').forEach(btn => {
+                        btn.disabled = true;
+                    });
+                });
+        }
+        
+        // 页面加载后检查API状态
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(checkCrawlerAPIStatus, 1000);
+        });
+        
+        // 导入选中的游戏
+        function importSelectedGames() {
             const selectedGames = [];
-            checkboxes.forEach(checkbox => {
-                const gameIndex = parseInt(checkbox.getAttribute('data-index'));
-                if (!isNaN(gameIndex) && gameIndex >= 0 && gameIndex < gamesData.length) {
-                    selectedGames.push(gamesData[gameIndex]);
+            
+            // 获取选中的游戏
+            document.querySelectorAll('.game-card input[type="checkbox"]:checked').forEach(checkbox => {
+                const index = parseInt(checkbox.getAttribute('data-index'));
+                if (!isNaN(index) && gamesData[index]) {
+                    selectedGames.push(gamesData[index]);
                 }
             });
             
+            if (selectedGames.length === 0) {
+                crawlerLog.error('未选择任何游戏');
+                return;
+            }
+            
+            // 显示状态
+            crawlerLog.clear();
+            crawlerLog.info(`开始导入 ${selectedGames.length} 个游戏...`);
+            
+            // 禁用按钮，防止重复点击
+            const importBtn = document.getElementById('import-selected-btn');
+            
+            if (importBtn) {
+                importBtn.disabled = true;
+                importBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 导入中...';
+            }
+            
             try {
-                // 获取现有游戏数据
+                // 从localStorage获取现有游戏数据
                 let existingGames = [];
-                try {
-                    const storedGames = localStorage.getItem('lovexgames_games');
-                    existingGames = storedGames ? JSON.parse(storedGames) : [];
-                } catch (e) {
-                    crawlerLog.error(`读取本地游戏数据失败: ${e.message}`);
-                    existingGames = [];
+                const storedGames = localStorage.getItem('lovexgames_games');
+                
+                if (storedGames) {
+                    try {
+                        existingGames = JSON.parse(storedGames);
+                        if (!Array.isArray(existingGames)) {
+                            existingGames = [];
+                            crawlerLog.warning('现有游戏数据格式不正确，将创建新数据');
+                        } else {
+                            crawlerLog.info(`成功读取现有游戏数据，共 ${existingGames.length} 个游戏`);
+                        }
+                    } catch (e) {
+                        crawlerLog.warning(`解析现有游戏数据失败: ${e.message}，将创建新数据`);
+                    }
+                } else {
+                    crawlerLog.info('未找到现有游戏数据，将创建新数据');
                 }
                 
-                const result = {
-                    added: 0,
-                    updated: 0,
-                    failed: 0
-                };
+                // 合并游戏数据（去重）
+                const existingUrls = new Set(existingGames.map(game => game.url));
+                let newGamesCount = 0;
                 
-                // 处理每个选中的游戏
                 selectedGames.forEach(game => {
-                    try {
-                        // 处理YouTube嵌入URL，转换为游戏可用的嵌入URL
-                        let embedUrl = game.embedUrl;
-                        if (embedUrl && embedUrl.includes('youtube.com/embed/')) {
-                            // 记录原始YouTube URL
-                            crawlerLog.info(`检测到YouTube URL: ${embedUrl}`);
+                    if (!existingUrls.has(game.url)) {
+                        // 为每个游戏添加必要的字段
+                        if (!game.id) {
+                            game.id = 'game_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
                         }
                         
-                        // 为游戏添加必要的字段
-                        const newGame = {
-                            id: generateGameId(),
-                            title: game.title,
-                            description: game.description || '暂无描述',
-                            category: game.category && game.category.trim() !== '' ? game.category : '未分类',
-                            thumbnailUrl: game.thumbnailUrl,
-                            embedUrl: embedUrl,
-                            instructions: game.instructions || '暂无说明',
-                            rating: 4.5,
-                            isFeatured: false,
-                            isNew: true,
-                            addedDate: new Date().toISOString().split('T')[0],
-                            source: game.source || '爬虫导入'
-                        };
-                        
-                        // 检查游戏是否已存在（通过标题匹配）
-                        const existingIndex = existingGames.findIndex(g => g.title === game.title);
-                        
-                        if (existingIndex >= 0) {
-                            // 更新现有游戏
-                            existingGames[existingIndex] = {
-                                ...existingGames[existingIndex],
-                                description: newGame.description,
-                                thumbnailUrl: newGame.thumbnailUrl,
-                                embedUrl: newGame.embedUrl,
-                                instructions: newGame.instructions,
-                                source: newGame.source
-                            };
-                            result.updated++;
-                        } else {
-                            // 添加新游戏
-                            existingGames.push(newGame);
-                            result.added++;
-                        }
-                    } catch (error) {
-                        console.error('导入游戏失败:', error, game);
-                        crawlerLog.error(`导入游戏 "${game.title}" 失败: ${error.message}`);
-                        result.failed++;
+                        existingGames.push(game);
+                        existingUrls.add(game.url);
+                        newGamesCount++;
                     }
                 });
                 
-                // 保存更新后的游戏数据
-                try {
-                    localStorage.setItem('lovexgames_games', JSON.stringify(existingGames));
-                    
-                    // 显示导入结果
-                    crawlerLog.success(`导入完成: 新增 ${result.added} 个, 更新 ${result.updated} 个, 失败 ${result.failed} 个`);
-                    
-                    // 导入完成后，跳转到游戏管理页面
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 2000);
-                } catch (e) {
-                    crawlerLog.error(`保存游戏数据失败: ${e.message}`);
-                    alert('保存游戏数据失败，可能是由于存储空间不足。请尝试减少导入的游戏数量。');
+                if (newGamesCount === 0) {
+                    crawlerLog.warning('所有选中的游戏都已存在，无需导入');
+                    resetButtons();
+                    return;
                 }
+                
+                // 保存到localStorage
+                localStorage.setItem('lovexgames_games', JSON.stringify(existingGames));
+                
+                crawlerLog.success(`成功导入 ${newGamesCount} 个新游戏到网站`);
+                
+                // 添加一个提示，建议用户刷新前台页面以查看导入的游戏
+                crawlerLog.info('请刷新前台页面以查看导入的游戏');
             } catch (e) {
-                crawlerLog.error(`导入过程出错: ${e.message}`);
-                console.error('导入过程错误:', e);
+                crawlerLog.error(`处理游戏数据失败: ${e.message}`);
+            } finally {
+                resetButtons();
+            }
+            
+            // 重置按钮状态
+            function resetButtons() {
+                if (importBtn) {
+                    importBtn.disabled = false;
+                    importBtn.innerHTML = '<i class="fas fa-file-import"></i> 导入选中游戏';
+                }
             }
         }
         

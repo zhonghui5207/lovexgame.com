@@ -408,34 +408,7 @@ class CrazyGamesCrawler:
             # 转换为网站格式
             site_format_games = []
             for game in games:
-                # 确保缩略图URL是有效的
-                thumbnail_url = game.get('thumbnailUrl', '')
-                if not thumbnail_url:
-                    # 生成占位图URL
-                    title = game.get('title', 'Game')
-                    thumbnail_url = f"https://placehold.co/600x400/1a1b26/ffffff?text={title.replace(' ', '+')}"
-                
-                # 确保嵌入URL是有效的
-                embed_url = game.get('embedUrl', '')
-                if not embed_url or embed_url == game.get('url', ''):
-                    # 尝试从游戏URL构造嵌入URL
-                    game_url = game.get('url', '')
-                    if 'crazygames.com' in game_url:
-                        game_slug = game_url.split('/')[-1]
-                        embed_url = f"https://www.crazygames.com/embed/{game_slug}"
-                    else:
-                        embed_url = game_url
-                
-                site_game = {
-                    'title': game.get('title', ''),
-                    'description': game.get('description', ''),
-                    'category': game.get('category', ''),
-                    'thumbnailUrl': thumbnail_url,
-                    'embedUrl': embed_url,
-                    'instructions': game.get('instructions', ''),
-                    'source': 'CrazyGames',
-                    'importDate': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                }
+                site_game = self._convert_to_site_format(game)
                 site_format_games.append(site_game)
             
             # 保存JSON文件到output目录
@@ -450,12 +423,80 @@ class CrazyGamesCrawler:
             with open(self.import_file, 'w', encoding='utf-8') as f:
                 json.dump(site_format_games, f, ensure_ascii=False, indent=2)
             
-            self.log(f"导入数据已保存到 {self.import_file}，可以在管理后台导入", 'INFO')
+            self.log(f"导入文件已创建: {self.import_file}", 'INFO')
             return True
-        
         except Exception as e:
             self.log(f"导出JSON失败: {str(e)}", 'ERROR')
+            import traceback
+            self.log(traceback.format_exc(), 'ERROR')
             return False
+    
+    def _convert_to_site_format(self, game):
+        """将游戏数据转换为网站格式"""
+        # 确保缩略图URL是有效的
+        thumbnail_url = game.get('thumbnailUrl', '')
+        if not thumbnail_url:
+            # 生成占位图URL
+            title = game.get('title', 'Game')
+            thumbnail_url = f"https://placehold.co/600x400/1a1b26/ffffff?text={title.replace(' ', '+')}"
+        
+        # 确保嵌入URL是有效的
+        embed_url = game.get('embedUrl', '')
+        if not embed_url or embed_url == game.get('url', ''):
+            # 尝试从游戏URL构造嵌入URL
+            game_url = game.get('url', '')
+            if 'crazygames.com' in game_url:
+                game_slug = game_url.split('/')[-1]
+                embed_url = f"https://www.crazygames.com/embed/{game_slug}"
+            else:
+                embed_url = game_url
+        
+        # 确保description有值
+        description = game.get('description', '')
+        if not description:
+            description = f"Play {game.get('title', 'this game')} online for free. No download required."
+        
+        # 确保instructions有值，如果为空则使用description
+        instructions = game.get('instructions', '')
+        if not instructions:
+            instructions = description
+        
+        # 确保category有值，如果为空则从预定义分类中随机选择一个
+        category = game.get('category', '')
+        if not category:
+            # 预定义的游戏分类（首字母大写）
+            categories = ['Action', 'Adventure', 'Puzzle', 'Strategy', 'Sports', 'Racing', 'Simulation', 'Horror']
+            category = random.choice(categories)
+        else:
+            # 确保分类名称首字母大写
+            category = category.capitalize()
+        
+        # 确保rating有值，如果为空则生成一个3.0到5.0之间的随机值
+        rating = game.get('rating', 0)
+        if not rating:
+            rating = round(random.uniform(3.0, 5.0), 1)
+        
+        # 确保id有值
+        game_id = game.get('id', '')
+        if not game_id:
+            # 从URL或标题生成ID
+            if game.get('url', ''):
+                game_id = game.get('url', '').split('/')[-1]
+            else:
+                game_id = game.get('title', '').lower().replace(' ', '-')
+        
+        site_game = {
+            'title': game.get('title', ''),
+            'url': game.get('url', ''),
+            'thumbnailUrl': thumbnail_url,
+            'id': game_id,
+            'description': description,
+            'instructions': instructions,
+            'category': category,
+            'rating': rating,
+            'embedUrl': embed_url
+        }
+        return site_game
     
     def export_to_excel(self, games):
         """将游戏数据导出到Excel文件"""
