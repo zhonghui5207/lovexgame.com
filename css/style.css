@@ -220,33 +220,39 @@ body {
 
 /* Game Detail Page */
 .game-detail-container {
-  display: grid;
-  grid-template-columns: 1fr 300px;
+  display: flex;
+  flex-direction: column;
   gap: 30px;
 }
 
 .game-content {
-  background-color: var(--card-bg);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: var(--card-shadow);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+@media (min-width: 1024px) {
+  .game-content {
+    grid-template-columns: 2fr 1fr;
+  }
 }
 
 .game-frame-container {
   position: relative;
   width: 100%;
+  background-color: #000;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: var(--card-shadow);
-  background-color: var(--card-bg);
-  margin-bottom: 20px;
-  height: 500px; /* 固定高度，避免画面异常大 */
+  aspect-ratio: 16 / 9;
+  max-height: 80vh; /* 限制最大高度为视口高度的80% */
 }
 
 .game-frame {
   width: 100%;
-  height: 100%;
+  height: 100%; /* 改为100%，使其填充容器 */
   border: none;
+  border-radius: 12px;
+  background-color: #1a1b26;
 }
 
 .game-description {
@@ -290,34 +296,40 @@ body {
   margin-bottom: 10px;
 }
 
+/* 相关游戏样式 */
 .related-games {
-  background-color: var(--card-bg);
-  border-radius: 12px;
-  padding: 15px;
-  box-shadow: var(--card-shadow);
+  margin-top: 20px;
 }
 
 .related-games h2 {
-  font-size: 1.2rem;
-  margin: 0 0 15px 0;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+}
+
+.related-games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
 }
 
 .related-game-card {
   display: flex;
-  margin-bottom: 15px;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: var(--card-bg);
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.2s;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 90px;
 }
 
 .related-game-card:hover {
   transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .related-game-thumb {
   width: 80px;
-  height: 60px;
+  height: 90px;
   flex-shrink: 0;
 }
 
@@ -328,22 +340,27 @@ body {
 }
 
 .related-game-info {
-  padding: 8px 12px;
-  flex-grow: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .related-game-title {
   font-size: 0.9rem;
   font-weight: 600;
-  margin: 0 0 3px 0;
-  white-space: nowrap;
+  margin: 0 0 5px 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .related-game-category {
   font-size: 0.75rem;
   color: var(--secondary-text);
+  margin: 0;
 }
 
 /* Footer Styles */
@@ -507,13 +524,43 @@ body {
   font-weight: 500;
 }
 
+/* 游戏iframe加载指示器 */
+.game-loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(121, 87, 243, 0.2);
+  border-top: 5px solid #7957f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.game-loading-indicator p {
+  color: #7957f3;
+  font-size: 16px;
+}
+
+/* 连接错误对话框样式 */
 .connection-error-dialog {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(26, 27, 38, 0.9);
+  background-color: rgba(26, 27, 38, 0.95);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -521,11 +568,16 @@ body {
   text-align: center;
   padding: 20px;
   box-sizing: border-box;
-  z-index: 10;
+  z-index: 20;
+  border-radius: 8px;
 }
 
 .error-icon {
   margin-bottom: 15px;
+}
+
+.error-icon svg {
+  fill: var(--accent-color);
 }
 
 .connection-error-dialog h3 {
@@ -536,7 +588,7 @@ body {
 
 .connection-error-dialog p {
   color: var(--secondary-text);
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   max-width: 80%;
   line-height: 1.5;
 }
@@ -553,6 +605,8 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
 }
 
 .offline-button {
@@ -619,6 +673,10 @@ body {
   .features {
     flex-direction: column;
     gap: 10px;
+  }
+  
+  .related-games-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -705,4 +763,179 @@ body {
 
 .game-card:hover .game-thumbnail img {
   transform: scale(1.05);
+}
+
+/* 游戏界面相关样式 */
+
+/* 可玩游戏卡片 */
+.playable-game-card {
+  background-color: #1e1f2c;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.playable-game-card:hover {
+  transform: translateY(-5px);
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background-color: #252838;
+}
+
+.game-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.play-badge {
+  background-color: #7957f3;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.game-preview {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.game-thumbnail {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.play-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.game-preview:hover .play-overlay {
+  opacity: 1;
+}
+
+.game-preview:hover .game-thumbnail {
+  transform: scale(1.05);
+}
+
+.play-button {
+  width: 70px;
+  height: 70px;
+  background-color: rgba(121, 87, 243, 0.8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+}
+
+.play-overlay:hover .play-button {
+  transform: scale(1);
+  background-color: rgba(121, 87, 243, 1);
+}
+
+.game-actions {
+  display: flex;
+  padding: 15px 20px;
+  gap: 10px;
+}
+
+.play-now-btn, .open-new-tab-btn {
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.play-now-btn {
+  background-color: #7957f3;
+  color: white;
+  flex: 2;
+}
+
+.play-now-btn:hover {
+  background-color: #6a46e5;
+}
+
+.open-new-tab-btn {
+  background-color: transparent;
+  border: 1px solid #7957f3;
+  color: #7957f3;
+  flex: 1;
+}
+
+.open-new-tab-btn:hover {
+  background-color: rgba(121, 87, 243, 0.1);
+}
+
+/* 游戏错误消息 */
+.game-error {
+  background-color: #1e1f2c;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+}
+
+.error-icon {
+  color: #ff5252;
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.game-error h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.game-error p {
+  margin-bottom: 25px;
+  color: #b0b0b0;
+  line-height: 1.6;
+}
+
+.game-error button {
+  background-color: #7957f3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.game-error button:hover {
+  background-color: #6a46e5;
 }

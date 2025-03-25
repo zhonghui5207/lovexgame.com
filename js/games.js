@@ -168,7 +168,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   // Check if we're on the game detail page
-  if (document.getElementById('game-frame')) {
+  const gameFrameContainer = document.querySelector('.game-frame-container');
+  if (gameFrameContainer) {
     const urlParams = new URLSearchParams(window.location.search);
     const gameId = urlParams.get('id');
     if (gameId) {
@@ -242,6 +243,7 @@ function createGameCard(game) {
   `;
   
   card.addEventListener('click', function() {
+    // 始终打开游戏详情页，无论游戏来源
     window.location.href = `game.html?id=${game.id}`;
   });
   
@@ -304,19 +306,14 @@ function loadGameDetails(gameId) {
 // 处理游戏详情（从loadGameDetails分离出来的逻辑）
 function processGameDetails(gameId) {
   console.log('处理游戏详情，ID:', gameId);
-  console.log('可用游戏:', allGames.length);
-  console.log('游戏ID列表:', allGames.map(g => g.id));
   
   // 尝试直接匹配ID
   let game = allGames.find(g => g.id === gameId);
-  console.log('直接匹配结果:', game);
   
   // 如果没有找到，尝试将URL中的下划线(_)替换为连字符(-)后匹配
   if (!game && gameId.includes('_')) {
     const convertedId = gameId.replace(/_/g, '-');
-    console.log('尝试转换后的ID:', convertedId);
     game = allGames.find(g => g.id === convertedId);
-    console.log('转换ID匹配结果:', game);
   }
   
   // 如果仍然没有找到，尝试提取时间戳部分进行匹配
@@ -324,90 +321,133 @@ function processGameDetails(gameId) {
     const parts = gameId.split('_');
     if (parts.length >= 2) {
       const timestamp = parts[1];
-      console.log('尝试通过时间戳匹配:', timestamp);
-      console.log('包含匹配时间戳的游戏:', allGames.filter(g => g.id && g.id.includes(timestamp)));
       game = allGames.find(g => g.id && g.id.includes(timestamp));
-      console.log('时间戳匹配结果:', game);
     }
   }
   
-  // 如果仍然没有找到，尝试按标题查找（最后的尝试）
+  // 如果是首次加载游戏且没有指定ID，使用第一个游戏
   if (!game && allGames.length > 0) {
-    console.log('尝试查找第一个游戏');
-    game = allGames[0]; // 使用第一个游戏作为后备
-    console.log('使用第一个游戏:', game);
+    game = allGames[0];
   }
   
   // 如果仍然没有找到游戏，记录错误并返回
   if (!game) {
-    console.error('游戏未找到:', gameId);
     document.getElementById('game-title').textContent = 'Game Not Found';
     document.getElementById('game-desc').textContent = 'The requested game could not be found. Please try another game.';
     return;
   }
   
-  // Set page title
+  console.log('匹配到游戏:', game);
+  
+  // 设置页面标题
   document.title = `${game.title} - LovexGames`;
   
-  // Update game iframe
-  const gameFrame = document.getElementById('game-frame');
-  if (gameFrame) {
-    // Set iframe source
-    gameFrame.src = game.embedUrl;
-    
-    // Handle iframe load event
-    gameFrame.onload = function() {
-      console.log('Game frame loaded successfully');
-    };
-    
-    // Handle iframe error event
-    gameFrame.onerror = function() {
-      console.error('Error loading game frame');
-      loadOfflineMode(gameFrame, game);
-    };
-    
-    // Additional error handling for iframe load failures
-    // Some browsers may not trigger onerror for iframes
-    const handleIframeError = function() {
-      if (gameFrame.contentDocument && gameFrame.contentDocument.body.innerHTML === '') {
-        console.error('Empty iframe content detected');
-        loadOfflineMode(gameFrame, game);
-        return true;
-      }
-      return false;
-    };
-    
-    // Set a timeout to check if the iframe loaded correctly
-    setTimeout(function() {
-      try {
-        // Try to access iframe content - if it fails, it's likely a cross-origin error
-        if (gameFrame.contentWindow.location.href) {
-          console.log('Game frame accessible');
-        }
-      } catch (e) {
-        console.error('Cross-origin error detected:', e);
-        if (!handleIframeError()) {
-          loadOfflineMode(gameFrame, game);
-        }
-      }
-    }, 5000); // 5 second timeout
-  }
+  // 更新游戏详情UI
+  updateGameDetails(game);
   
-  // Update game details
+  // 加载游戏框架
+  loadGameFrame(game);
+  
+  // 加载相关游戏
+  loadRelatedGames(game);
+}
+
+// 更新游戏详情UI
+function updateGameDetails(game) {
   document.getElementById('game-title').textContent = game.title;
   document.getElementById('game-category').textContent = game.category || 'Unknown';
   document.getElementById('game-rating').textContent = `Rating: ${game.rating || '4.5'}/5`;
   document.getElementById('game-date').textContent = `Added: ${game.dateAdded || 'March 2025'}`;
   document.getElementById('game-desc').textContent = game.description || 'No description available.';
   document.getElementById('game-instructions').textContent = game.instructions || 'No instructions available.';
-  
-  // Load related games (games in the same category)
-  loadRelatedGames(game);
 }
 
-// Show connection error dialog
+// 加载游戏框架
+function loadGameFrame(game) {
+  console.log('加载游戏框架:', game.title, game.embedUrl);
+  
+  const gameContainer = document.querySelector('.game-frame-container');
+  if (!gameContainer) {
+    console.error('游戏容器不存在');
+    return;
+  }
+  
+  // 清空容器
+  gameContainer.innerHTML = '';
+  
+  // 检查游戏嵌入URL是否存在
+  if (!game.embedUrl) {
+    gameContainer.innerHTML = '<div class="game-error"><p>No game URL provided.</p></div>';
+    return;
+  }
+  
+  // 判断是外部游戏还是内部游戏
+  const isExternal = game.embedUrl.includes('crazygames.com') || (
+    (game.embedUrl.includes('http://') || game.embedUrl.includes('https://')) &&
+    !game.embedUrl.includes(window.location.hostname)
+  );
+  
+  console.log('游戏类型:', isExternal ? '外部游戏' : '内部游戏');
+  
+  // 创建iframe元素
+  const iframe = document.createElement('iframe');
+  iframe.className = 'game-frame';
+  
+  // 确保使用HTTPS
+  let gameUrl = game.embedUrl;
+  if (gameUrl.startsWith('http:')) {
+    gameUrl = gameUrl.replace('http:', 'https:');
+  }
+  
+  // 设置iframe属性
+  iframe.src = gameUrl;
+  iframe.setAttribute('allowfullscreen', 'true');
+  iframe.setAttribute('allow', 'autoplay; fullscreen; gamepad *;');
+  iframe.setAttribute('frameborder', '0');
+  iframe.setAttribute('scrolling', 'no');
+  
+  if (isExternal) {
+    iframe.setAttribute('sandbox', 'allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts');
+  }
+  
+  // 添加加载指示器
+  const loadingIndicator = document.createElement('div');
+  loadingIndicator.className = 'game-loading-indicator';
+  loadingIndicator.innerHTML = `
+    <div class="loading-spinner"></div>
+    <p>Loading game...</p>
+  `;
+  gameContainer.appendChild(loadingIndicator);
+  
+  // iframe加载完成后移除加载指示器
+  iframe.onload = function() {
+    console.log('游戏iframe加载完成');
+    loadingIndicator.remove();
+  };
+  
+  // 处理加载错误
+  iframe.onerror = function(error) {
+    console.error('游戏iframe加载失败:', error);
+    loadingIndicator.remove();
+    showConnectionError(iframe, game);
+  };
+  
+  // 添加iframe到容器
+  gameContainer.appendChild(iframe);
+  
+  // 设置超时检测(5秒)，如果游戏还未加载完成，可能存在问题
+  setTimeout(function() {
+    if (document.body.contains(loadingIndicator)) {
+      console.log('游戏加载超时，显示错误对话框');
+      loadingIndicator.remove();
+      showConnectionError(iframe, game);
+    }
+  }, 5000);
+}
+
+// 显示连接错误对话框
 function showConnectionError(gameFrame, game) {
-  // Create error dialog element
+  // 创建错误对话框元素
   const errorDialog = document.createElement('div');
   errorDialog.className = 'connection-error-dialog';
   errorDialog.innerHTML = `
@@ -424,13 +464,13 @@ function showConnectionError(gameFrame, game) {
     </div>
   `;
   
-  // Get the game frame container
+  // 获取游戏框架容器
   const frameContainer = gameFrame.parentNode;
   
-  // Add the error dialog to the container
+  // 添加错误对话框到容器
   frameContainer.appendChild(errorDialog);
   
-  // Add event listeners to buttons
+  // 添加按钮事件监听器
   const offlineButton = errorDialog.querySelector('.offline-button');
   const reloadButton = errorDialog.querySelector('.reload-button');
   
@@ -445,9 +485,9 @@ function showConnectionError(gameFrame, game) {
   });
 }
 
-// Load offline mode for the game
+// 加载游戏离线模式
 function loadOfflineMode(gameFrame, game) {
-  console.log('Loading offline mode:', game.title);
+  console.log('加载离线模式:', game.title);
   
   // 确保游戏对象有所有必要的属性
   const gameTitle = game.title || 'Unknown Game';
@@ -637,4 +677,45 @@ function addGame(collection, gameData) {
   }
   
   return true;
+}
+
+// 以下函数为了保持向后兼容
+function createPlayableGameInterface(game) {
+  loadGameFrame(game);
+}
+
+function isExternalGame(game) {
+  if (!game.embedUrl) return false;
+  
+  return game.embedUrl.includes('crazygames.com') || 
+    (game.embedUrl.includes('http://') || game.embedUrl.includes('https://')) && 
+    !game.embedUrl.includes(window.location.hostname);
+}
+
+function createExternalGameInterface(container, game) {
+  // 直接调用新函数
+  loadGameFrame(game);
+}
+
+function createInternalGameInterface(container, game) {
+  // 直接调用新函数
+  loadGameFrame(game);
+}
+
+function launchGame(container, game) {
+  // 直接调用新函数
+  loadGameFrame(game);
+}
+
+function createErrorMessage(container, game) {
+  container.innerHTML = `
+    <div class="game-error">
+      <div class="error-icon">
+        <i class="fas fa-exclamation-circle"></i>
+      </div>
+      <h3>Unable to load the game</h3>
+      <p>We couldn't load the game due to security restrictions. You can still play it by opening it in a new tab.</p>
+      <button class="open-new-tab-btn" onclick="window.open('${game.embedUrl}', '_blank')">Open in New Tab</button>
+    </div>
+  `;
 }
