@@ -218,50 +218,61 @@ body {
   color: var(--secondary-text);
 }
 
+/* 分类页面样式 */
+.no-games {
+  padding: 20px;
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  text-align: center;
+  color: var(--secondary-text);
+  margin: 20px 0;
+  box-shadow: var(--card-shadow);
+}
+
+.category-card {
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #333;
+  border-radius: 12px;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
+
+.category-content {
+  padding: 20px;
+}
+
+.category-content h3 {
+  font-size: 1.5rem;
+  margin: 0 0 10px 0;
+  color: white;
+}
+
+.category-content p {
+  font-size: 1rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
 /* Game Detail Page */
 .game-detail-container {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 20px;
 }
 
-.game-content {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 30px;
-}
-
-@media (min-width: 1024px) {
-  .game-content {
-    grid-template-columns: 2fr 1fr;
-  }
-}
-
-.game-frame-container {
-  position: relative;
-  width: 100%;
-  background-color: #000;
-  border-radius: 8px;
-  overflow: hidden;
-  aspect-ratio: 16 / 9;
-  max-height: 80vh; /* 限制最大高度为视口高度的80% */
-}
-
-.game-frame {
-  width: 100%;
-  height: 100%; /* 改为100%，使其填充容器 */
-  border: none;
-  border-radius: 12px;
-  background-color: #1a1b26;
-}
-
-.game-description {
-  padding: 20px;
-}
-
-.game-description h1 {
-  font-size: 1.8rem;
-  margin: 0 0 15px 0;
+.game-title-main {
+  font-size: 2rem;
+  margin: 0;
+  padding: 0;
 }
 
 .game-meta {
@@ -278,13 +289,89 @@ body {
   color: var(--secondary-text);
 }
 
-.game-meta-item svg {
+.game-meta-item i {
   margin-right: 5px;
+}
+
+.game-main-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+@media (min-width: 1024px) {
+  .game-main-content {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.game-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.game-frame-container {
+  position: relative;
+  width: 100%;
+  background-color: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  max-height: 70vh; /* 限制最大高度为视口高度的70% */
+  min-height: 400px; /* 确保最小高度 */
+}
+
+.game-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background-color: #1a1b26;
+}
+
+.game-loading-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  z-index: 5;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(121, 87, 243, 0.2);
+  border-top: 5px solid #7957f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.game-description {
+  padding: 20px;
+  background-color: var(--card-bg);
+  border-radius: 12px;
 }
 
 .game-description p {
   line-height: 1.6;
   color: var(--secondary-text);
+  margin-top: 0;
 }
 
 .game-instructions {
@@ -296,25 +383,27 @@ body {
   margin-bottom: 10px;
 }
 
-/* 相关游戏样式 */
 .related-games {
-  margin-top: 20px;
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 20px;
 }
 
 .related-games h2 {
+  margin-top: 0;
   margin-bottom: 15px;
   font-size: 1.3rem;
 }
 
 .related-games-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: 1fr;
   gap: 15px;
 }
 
 .related-game-card {
   display: flex;
-  background-color: var(--card-bg);
+  background-color: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
@@ -466,6 +555,8 @@ body {
   min-height: 120px;
   transition: transform 0.2s, box-shadow 0.2s;
   cursor: pointer;
+  border: 1px solid #333;
+  border-radius: 12px;
 }
 
 .category-card:hover {

@@ -1,0 +1,21 @@
+/* Responsive styles for LovexGames */
+/* This file is intentionally kept minimal */
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 15px;
+  }
+  
+  .games-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+/* Small mobile styles */
+@media (max-width: 480px) {
+  .games-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2,51 +2,93 @@
 let featuredGames = [];
 let popularGames = [];
 let newGames = [];
-let allGames = []; // 全局变量存储所有游戏
+let allGames = []; // Global variable to store all games
 
-// 从本地存储加载游戏数据
+// Load games data from local storage
 function loadGamesFromStorage() {
-  // 尝试从localStorage获取游戏数据
+  // Try to get games data from localStorage
   const storedGames = localStorage.getItem('lovexgames_games');
   
   if (storedGames) {
-    allGames = JSON.parse(storedGames); // 保存所有游戏到全局变量
+    allGames = JSON.parse(storedGames); // Save all games to global variable
     
-    // 根据状态分类游戏
-    featuredGames = allGames.filter(game => game.status === '推荐' || game.isFeatured);
-    newGames = allGames.filter(game => game.status === '新游戏' || game.isNew);
+    // Categorize games based on status
+    featuredGames = allGames.filter(game => game.status === 'Featured' || game.isFeatured);
+    newGames = allGames.filter(game => game.status === 'New' || game.isNew);
     
-    // 其他游戏作为热门游戏
+    // Other games as popular games
     popularGames = allGames.filter(game => 
-      (!game.status || (game.status !== '推荐' && game.status !== '新游戏')) && 
+      (!game.status || (game.status !== 'Featured' && game.status !== 'New')) && 
       !game.isFeatured && !game.isNew
     );
   } else {
-    // 如果localStorage中没有游戏数据，尝试从games_for_import.json加载
+    // If no games data in localStorage, try to load from games_for_import.json
     loadGamesFromImportFile();
   }
 }
 
-// 从games_for_import.json加载游戏数据
+// Load games data from games_for_import.json
 function loadGamesFromImportFile() {
-  console.log('尝试从games_for_import.json加载游戏数据');
-  
-  // 使用fetch API加载游戏数据
-  fetch('scripts/games_for_import.json')
+  // 使用正确的路径加载游戏数据
+  fetch('/scripts/games_for_import.json')
     .then(response => {
       if (!response.ok) {
-        throw new Error('无法加载游戏数据文件');
+        // 尝试使用相对路径
+        return fetch('scripts/games_for_import.json');
       }
       return response.json();
     })
+    .then(response => {
+      if (response.ok === false) {
+        // 如果第二次尝试也失败，则返回空数组
+        return [];
+      }
+      // 如果是正常的JSON响应，直接返回
+      if (Array.isArray(response)) {
+        return response;
+      }
+      // 否则尝试解析JSON
+      return response.json();
+    })
     .then(importGames => {
-      console.log('成功加载游戏数据:', importGames);
+      if (!importGames || importGames.length === 0) {
+        // 使用硬编码的示例游戏数据
+        importGames = [
+          {
+            id: "voxiom-io",
+            title: "Voxiom.io",
+            category: "Action",
+            thumbnailUrl: "https://imgs.crazygames.com/voxiom-io_16x9/20250325203708/voxiom-io_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+            description: "Voxiom.io is a 3D real-time multiplayer first-person voxel shooter featuring destructible maps.",
+            rating: 4.4,
+            embedUrl: "https://www.crazygames.com/embed/voxiom-io"
+          },
+          {
+            id: "bullet-force-multiplayer",
+            title: "Bullet Force",
+            category: "Action",
+            thumbnailUrl: "https://imgs.crazygames.com/bullet-force-multiplayer_16x9/20250323203709/bullet-force-multiplayer_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+            description: "Bullet Force is a modern 3D first-person shooter with great graphics and addictive gameplay.",
+            rating: 4.2,
+            embedUrl: "https://www.crazygames.com/embed/bullet-force-multiplayer"
+          },
+          {
+            id: "forward-assault",
+            title: "Forward Assault",
+            category: "Action",
+            thumbnailUrl: "https://imgs.crazygames.com/forward-assault_16x9/20250325203708/forward-assault_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+            description: "Forward Assault is a first-person shooter game inspired by Counter-Strike.",
+            rating: 4.3,
+            embedUrl: "https://www.crazygames.com/embed/forward-assault"
+          }
+        ];
+      }
       
-      // 为每个游戏添加ID（如果没有）
+      // Add ID for each game (if not exists)
       allGames = importGames.map(game => {
-        // 如果游戏没有ID，生成一个
+        // Generate ID if game doesn't have one
         if (!game.id) {
-          // 使用title和时间戳生成ID
+          // Generate ID using title and timestamp
           const timestamp = Date.now();
           const randomNum = Math.floor(Math.random() * 1000);
           game.id = `game-${timestamp}-${randomNum}`;
@@ -54,23 +96,31 @@ function loadGamesFromImportFile() {
         return game;
       });
       
-      // 保存到localStorage
+      // Save to localStorage
       localStorage.setItem('lovexgames_games', JSON.stringify(allGames));
       
-      // 根据状态分类游戏
-      featuredGames = allGames.slice(0, 3); // 前3个作为推荐游戏
-      newGames = allGames.slice(3, 8); // 接下来5个作为新游戏
-      popularGames = allGames.slice(8); // 剩余的作为热门游戏
+      // Categorize games based on status
+      featuredGames = allGames.slice(0, 3); // First 3 as featured games
+      newGames = allGames.slice(3, 8); // Next 5 as new games
+      popularGames = allGames.slice(8); // Remaining as popular games
       
-      // 重新加载页面上的游戏
+      // Reload games on the page
       if (document.getElementById('featured-games') || 
           document.getElementById('popular-games') || 
           document.getElementById('new-games')) {
         loadHomePageGames();
       }
+      
+      // 如果在分类页面，重新加载分类游戏
+      if (document.getElementById('category-games')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryId = urlParams.get('id');
+        if (categoryId) {
+          loadCategoryGames(categoryId);
+        }
+      }
     })
     .catch(error => {
-      console.error('加载游戏数据失败:', error);
       featuredGames = [];
       popularGames = [];
       newGames = [];
@@ -79,13 +129,13 @@ function loadGamesFromImportFile() {
 
 // Load games for the home page
 function loadHomePageGames() {
-  // 首先从存储中加载游戏
+  // First load games from storage
   loadGamesFromStorage();
   
   // Load featured games
   const featuredGamesContainer = document.getElementById('featured-games');
   if (featuredGamesContainer) {
-    featuredGamesContainer.innerHTML = ''; // 清空容器
+    featuredGamesContainer.innerHTML = ''; // Clear container
     featuredGames.forEach(game => {
       featuredGamesContainer.appendChild(createGameCard(game));
     });
@@ -94,7 +144,7 @@ function loadHomePageGames() {
   // Load popular games
   const popularGamesContainer = document.getElementById('popular-games');
   if (popularGamesContainer) {
-    popularGamesContainer.innerHTML = ''; // 清空容器
+    popularGamesContainer.innerHTML = ''; // Clear container
     popularGames.forEach(game => {
       popularGamesContainer.appendChild(createGameCard(game));
     });
@@ -103,29 +153,55 @@ function loadHomePageGames() {
   // Load new games
   const newGamesContainer = document.getElementById('new-games');
   if (newGamesContainer) {
-    newGamesContainer.innerHTML = ''; // 清空容器
+    newGamesContainer.innerHTML = ''; // Clear container
     newGames.forEach(game => {
       newGamesContainer.appendChild(createGameCard(game));
     });
   }
 }
 
-// 加载分类游戏
+// Load category games
 function loadCategoryGames(categoryId) {
-  // 获取分类名称
+  // 确保先从localStorage加载游戏数据
+  if (allGames.length === 0) {
+    loadGamesFromStorage();
+  }
+  
+  // Get category name
   const category = gameCategories.find(cat => cat.id === categoryId);
   
   if (category) {
-    // 更新页面标题
-    document.title = `${category.name} 游戏 - LovexGames`;
-    document.getElementById('category-title').textContent = `${category.name} 游戏`;
+    // 打印当前选择的分类信息
+    console.log('当前分类:', category);
     
-    // 获取该分类的游戏
-    const categoryGames = allGames.filter(game => 
-      game.category && game.category.toLowerCase() === category.name.toLowerCase()
-    );
+    // 打印所有游戏的分类信息
+    console.log('所有游戏的分类:');
+    allGames.forEach(game => {
+      console.log(`游戏: ${game.title}, 分类: ${game.category}`);
+    });
     
-    // 显示游戏
+    // 打印所有系统定义的分类
+    console.log('系统定义的所有分类:');
+    gameCategories.forEach(cat => {
+      console.log(`分类ID: ${cat.id}, 分类名称: ${cat.name}`);
+    });
+    
+    // Update page title
+    document.title = `${category.name} Games - LovexGames`;
+    document.getElementById('category-title').textContent = `${category.name} Games`;
+    
+    // 使用精确匹配筛选游戏
+    let categoryGames = allGames.filter(game => {
+      // 检查game.category是否存在
+      if (!game.category) return false;
+      
+      // 直接比较category和分类名称，不转换大小写
+      const match = game.category === category.name;
+      console.log(`游戏: ${game.title}, 游戏分类: ${game.category}, 当前分类: ${category.name}, 匹配: ${match}`);
+      return match;
+    });
+    
+    // Display games
     const gamesContainer = document.getElementById('category-games');
     if (!gamesContainer) return;
     
@@ -243,7 +319,7 @@ function createGameCard(game) {
   `;
   
   card.addEventListener('click', function() {
-    // 始终打开游戏详情页，无论游戏来源
+    // Always open game details page, regardless of game source
     window.location.href = `game.html?id=${game.id}`;
   });
   
@@ -253,28 +329,20 @@ function createGameCard(game) {
 // Load game details for the game page
 function loadGameDetails(gameId) {
   if (!gameId) {
-    console.error('No game ID provided');
     document.getElementById('game-title').textContent = 'Game Not Found';
     document.getElementById('game-desc').textContent = 'No game ID was provided. Please try another game.';
     return;
   }
 
-  // 如果allGames为空，先尝试加载游戏数据
+  // If allGames is empty, try to load games data first
   if (allGames.length === 0) {
-    console.log('游戏数据为空，尝试加载数据');
     loadGamesFromStorage();
     
-    // 如果仍然为空，尝试从导入文件加载
+    // If still empty, try to load from import file
     if (allGames.length === 0) {
-      console.log('从localStorage加载失败，尝试从导入文件加载');
-      
-      // 使用Promise来处理异步加载
       fetch('scripts/games_for_import.json')
         .then(response => response.json())
         .then(importGames => {
-          console.log('成功加载游戏数据:', importGames);
-          
-          // 为每个游戏添加ID（如果没有）
           allGames = importGames.map(game => {
             if (!game.id) {
               const timestamp = Date.now();
@@ -284,14 +352,12 @@ function loadGameDetails(gameId) {
             return game;
           });
           
-          // 保存到localStorage
+          // Save to localStorage
           localStorage.setItem('lovexgames_games', JSON.stringify(allGames));
           
-          // 加载完成后，继续处理游戏详情
           processGameDetails(gameId);
         })
         .catch(error => {
-          console.error('加载游戏数据失败:', error);
           document.getElementById('game-title').textContent = 'Error Loading Games';
           document.getElementById('game-desc').textContent = 'Failed to load game data. Please try again later.';
         });
@@ -299,24 +365,20 @@ function loadGameDetails(gameId) {
     }
   }
   
-  // 如果已经有游戏数据，直接处理
   processGameDetails(gameId);
 }
 
-// 处理游戏详情（从loadGameDetails分离出来的逻辑）
+// Process game details (separated logic from loadGameDetails)
 function processGameDetails(gameId) {
-  console.log('处理游戏详情，ID:', gameId);
-  
-  // 尝试直接匹配ID
   let game = allGames.find(g => g.id === gameId);
   
-  // 如果没有找到，尝试将URL中的下划线(_)替换为连字符(-)后匹配
+  // If not found, try to replace underscores (_) with hyphens (-) and match
   if (!game && gameId.includes('_')) {
     const convertedId = gameId.replace(/_/g, '-');
     game = allGames.find(g => g.id === convertedId);
   }
   
-  // 如果仍然没有找到，尝试提取时间戳部分进行匹配
+  // If still not found, try to extract timestamp part and match
   if (!game && gameId.includes('_')) {
     const parts = gameId.split('_');
     if (parts.length >= 2) {
@@ -325,92 +387,87 @@ function processGameDetails(gameId) {
     }
   }
   
-  // 如果是首次加载游戏且没有指定ID，使用第一个游戏
+  // If first load and no ID specified, use the first game
   if (!game && allGames.length > 0) {
     game = allGames[0];
   }
   
-  // 如果仍然没有找到游戏，记录错误并返回
+  // If still not found, log error and return
   if (!game) {
     document.getElementById('game-title').textContent = 'Game Not Found';
     document.getElementById('game-desc').textContent = 'The requested game could not be found. Please try another game.';
     return;
   }
   
-  console.log('匹配到游戏:', game);
-  
-  // 设置页面标题
   document.title = `${game.title} - LovexGames`;
   
-  // 更新游戏详情UI
   updateGameDetails(game);
   
-  // 加载游戏框架
   loadGameFrame(game);
   
-  // 加载相关游戏
   loadRelatedGames(game);
 }
 
-// 更新游戏详情UI
+// Update game details UI
 function updateGameDetails(game) {
-  document.getElementById('game-title').textContent = game.title;
-  document.getElementById('game-category').textContent = game.category || 'Unknown';
-  document.getElementById('game-rating').textContent = `Rating: ${game.rating || '4.5'}/5`;
-  document.getElementById('game-date').textContent = `Added: ${game.dateAdded || 'March 2025'}`;
-  document.getElementById('game-desc').textContent = game.description || 'No description available.';
-  document.getElementById('game-instructions').textContent = game.instructions || 'No instructions available.';
+  // 更新主标题和元数据
+  const titleElements = document.querySelectorAll('#game-title');
+  titleElements.forEach(el => {
+    el.textContent = game.title;
+  });
+  
+  // 更新分类和评分
+  const categoryElement = document.getElementById('game-category');
+  if (categoryElement) {
+    categoryElement.textContent = game.category || 'Unknown';
+  }
+  
+  const ratingElement = document.getElementById('game-rating');
+  if (ratingElement) {
+    ratingElement.textContent = `Rating: ${game.rating || '4.5'}/5`;
+  }
+  
+  // 更新描述和说明
+  const descElement = document.getElementById('game-desc');
+  if (descElement) {
+    descElement.textContent = game.description || 'No description available.';
+  }
+  
+  const instructionsElement = document.getElementById('game-instructions');
+  if (instructionsElement) {
+    instructionsElement.textContent = game.instructions || 'No instructions available.';
+  }
 }
 
-// 加载游戏框架
+// Load game frame
 function loadGameFrame(game) {
-  console.log('加载游戏框架:', game.title, game.embedUrl);
-  
   const gameContainer = document.querySelector('.game-frame-container');
   if (!gameContainer) {
-    console.error('游戏容器不存在');
     return;
   }
   
-  // 清空容器
   gameContainer.innerHTML = '';
   
-  // 检查游戏嵌入URL是否存在
-  if (!game.embedUrl) {
-    gameContainer.innerHTML = '<div class="game-error"><p>No game URL provided.</p></div>';
-    return;
-  }
-  
-  // 判断是外部游戏还是内部游戏
-  const isExternal = game.embedUrl.includes('crazygames.com') || (
-    (game.embedUrl.includes('http://') || game.embedUrl.includes('https://')) &&
-    !game.embedUrl.includes(window.location.hostname)
-  );
-  
-  console.log('游戏类型:', isExternal ? '外部游戏' : '内部游戏');
-  
-  // 创建iframe元素
   const iframe = document.createElement('iframe');
   iframe.className = 'game-frame';
   
-  // 确保使用HTTPS
   let gameUrl = game.embedUrl;
   if (gameUrl.startsWith('http:')) {
     gameUrl = gameUrl.replace('http:', 'https:');
   }
   
-  // 设置iframe属性
   iframe.src = gameUrl;
   iframe.setAttribute('allowfullscreen', 'true');
   iframe.setAttribute('allow', 'autoplay; fullscreen; gamepad *;');
   iframe.setAttribute('frameborder', '0');
   iframe.setAttribute('scrolling', 'no');
   
-  if (isExternal) {
+  if (game.embedUrl.includes('crazygames.com') || 
+    (game.embedUrl.includes('http://') || game.embedUrl.includes('https://')) && 
+    !game.embedUrl.includes(window.location.hostname)) {
     iframe.setAttribute('sandbox', 'allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts');
   }
   
-  // 添加加载指示器
   const loadingIndicator = document.createElement('div');
   loadingIndicator.className = 'game-loading-indicator';
   loadingIndicator.innerHTML = `
@@ -419,35 +476,27 @@ function loadGameFrame(game) {
   `;
   gameContainer.appendChild(loadingIndicator);
   
-  // iframe加载完成后移除加载指示器
   iframe.onload = function() {
-    console.log('游戏iframe加载完成');
     loadingIndicator.remove();
   };
   
-  // 处理加载错误
   iframe.onerror = function(error) {
-    console.error('游戏iframe加载失败:', error);
     loadingIndicator.remove();
     showConnectionError(iframe, game);
   };
   
-  // 添加iframe到容器
   gameContainer.appendChild(iframe);
   
-  // 设置超时检测(5秒)，如果游戏还未加载完成，可能存在问题
   setTimeout(function() {
     if (document.body.contains(loadingIndicator)) {
-      console.log('游戏加载超时，显示错误对话框');
       loadingIndicator.remove();
       showConnectionError(iframe, game);
     }
   }, 5000);
 }
 
-// 显示连接错误对话框
+// Show connection error dialog
 function showConnectionError(gameFrame, game) {
-  // 创建错误对话框元素
   const errorDialog = document.createElement('div');
   errorDialog.className = 'connection-error-dialog';
   errorDialog.innerHTML = `
@@ -464,13 +513,10 @@ function showConnectionError(gameFrame, game) {
     </div>
   `;
   
-  // 获取游戏框架容器
   const frameContainer = gameFrame.parentNode;
   
-  // 添加错误对话框到容器
   frameContainer.appendChild(errorDialog);
   
-  // 添加按钮事件监听器
   const offlineButton = errorDialog.querySelector('.offline-button');
   const reloadButton = errorDialog.querySelector('.reload-button');
   
@@ -485,16 +531,8 @@ function showConnectionError(gameFrame, game) {
   });
 }
 
-// 加载游戏离线模式
+// Load game offline mode
 function loadOfflineMode(gameFrame, game) {
-  console.log('加载离线模式:', game.title);
-  
-  // 确保游戏对象有所有必要的属性
-  const gameTitle = game.title || 'Unknown Game';
-  const gameDesc = game.description || 'No description available.';
-  const gameInstructions = game.instructions || 'No instructions available.';
-  const gameThumbnail = game.thumbnailUrl || '';
-  
   gameFrame.srcdoc = `
     <html>
     <head>
@@ -548,12 +586,12 @@ function loadOfflineMode(gameFrame, game) {
       </style>
     </head>
     <body>
-      <h2>${gameTitle} <span class="offline-badge">Offline Mode</span></h2>
-      ${gameThumbnail ? `<img src="${gameThumbnail}" alt="${gameTitle}" class="game-image">` : ''}
-      <p>${gameDesc}</p>
+      <h2>${game.title} <span class="offline-badge">Offline Mode</span></h2>
+      ${game.thumbnailUrl ? `<img src="${game.thumbnailUrl}" alt="${game.title}" class="game-image">` : ''}
+      <p>${game.description}</p>
       <div class="instructions">
         <h3>How to Play</h3>
-        <p>${gameInstructions}</p>
+        <p>${game.instructions}</p>
       </div>
       <p>Game cannot be loaded at this time. Please try again later or refresh the page.</p>
     </body>
@@ -566,10 +604,6 @@ function loadRelatedGames(currentGame) {
   const relatedGamesContainer = document.getElementById('related-games-container');
   if (!relatedGamesContainer) return;
   
-  // Clear container
-  relatedGamesContainer.innerHTML = '';
-  
-  // Find games in the same category, excluding the current game
   const relatedGames = allGames
     .filter(game => game.category === currentGame.category && game.id !== currentGame.id)
     .slice(0, 5); // Limit to 5 related games
@@ -579,12 +613,10 @@ function loadRelatedGames(currentGame) {
     return;
   }
   
-  // Add related games to container
   relatedGames.forEach(game => {
     const relatedGameCard = document.createElement('div');
     relatedGameCard.className = 'related-game-card';
     
-    // Default thumbnail if not provided
     const thumbnailUrl = game.thumbnailUrl || `https://placehold.co/80x60/1a1b26/ffffff?text=${encodeURIComponent(game.title)}`;
     
     relatedGameCard.innerHTML = `
@@ -615,27 +647,22 @@ function searchGames(query) {
     game.category.toLowerCase().includes(query.toLowerCase())
   );
   
-  // Redirect to search results page (to be implemented)
-  console.log('Search results:', searchResults);
   alert(`Found ${searchResults.length} games matching "${query}"`);
-  
-  // TODO: Implement search results page
 }
 
 // Helper function to get game count by category
 function getGameCountByCategory(category) {
-  return allGames.filter(game => game.category === category).length;
+  return allGames.filter(game => 
+    game.category && game.category.toLowerCase() === category.toLowerCase()
+  ).length;
 }
 
 // Add a new game to the collection
 function addGame(collection, gameData) {
-  // Validate required fields
   if (!gameData.id || !gameData.title || !gameData.embedUrl || !gameData.category) {
-    console.error('Missing required game data fields');
     return false;
   }
   
-  // Add default values if not provided
   const newGame = {
     description: '',
     thumbnailUrl: '',
@@ -647,7 +674,6 @@ function addGame(collection, gameData) {
     ...gameData
   };
   
-  // Add to the specified collection
   switch (collection) {
     case 'featured':
       featuredGames.push(newGame);
@@ -659,16 +685,13 @@ function addGame(collection, gameData) {
       newGames.push(newGame);
       break;
     default:
-      console.error('Invalid collection:', collection);
       return false;
   }
   
-  // Add to allGames if not already present
   if (!allGames.some(game => game.id === newGame.id)) {
     allGames.push(newGame);
   }
   
-  // Refresh the UI if the page is loaded
   if (document.readyState === 'complete') {
     const container = document.getElementById(`${collection}-games`);
     if (container) {
@@ -679,7 +702,7 @@ function addGame(collection, gameData) {
   return true;
 }
 
-// 以下函数为了保持向后兼容
+// The following functions are for backward compatibility
 function createPlayableGameInterface(game) {
   loadGameFrame(game);
 }
@@ -693,17 +716,14 @@ function isExternalGame(game) {
 }
 
 function createExternalGameInterface(container, game) {
-  // 直接调用新函数
   loadGameFrame(game);
 }
 
 function createInternalGameInterface(container, game) {
-  // 直接调用新函数
   loadGameFrame(game);
 }
 
 function launchGame(container, game) {
-  // 直接调用新函数
   loadGameFrame(game);
 }
 
