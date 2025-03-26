@@ -655,7 +655,9 @@
             
             // 使用XMLHttpRequest加载游戏数据
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', '../scripts/games_for_import.json', true);
+            // 添加时间戳参数防止缓存
+            const timestamp = new Date().getTime();
+            xhr.open('GET', `../scripts/games_for_import.json?t=${timestamp}`, true);
             
             // 添加事件监听器
             xhr.onload = function() {
@@ -692,6 +694,10 @@
                 console.error('请求游戏数据失败:', e);
                 crawlerLog.error('请求游戏数据失败');
             };
+            
+            // 设置响应类型为JSON，避免缓存问题
+            xhr.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+            xhr.setRequestHeader('Pragma', 'no-cache');
             
             // 发送请求
             xhr.send();
@@ -937,8 +943,23 @@
             .then(data => {
                 if (data.status === 'success') {
                     crawlerLog.success(data.message);
-                    // 刷新游戏列表
-                    loadLocalGames();
+                    // 添加延迟，确保文件已经完全写入
+                    crawlerLog.info('正在等待文件更新...');
+                    setTimeout(() => {
+                        // 刷新游戏列表
+                        crawlerLog.info('正在刷新游戏列表...');
+                        loadLocalGames();
+                        
+                        // 添加一个额外的检查，确保数据已加载
+                        setTimeout(() => {
+                            if (gamesData.length === 0 || !gamesData.some(game => game.url === gameUrl)) {
+                                crawlerLog.warning('未检测到新爬取的游戏，尝试再次刷新...');
+                                loadLocalGames();
+                            } else {
+                                crawlerLog.success('游戏列表已更新，包含新爬取的游戏');
+                            }
+                        }, 2000);
+                    }, 1500);
                 } else {
                     crawlerLog.error(`爬取失败: ${data.message}`);
                 }
