@@ -453,41 +453,53 @@ class CrazyGamesCrawler:
     
     def _convert_to_site_format(self, game):
         """将爬取的游戏数据转换为网站使用的格式"""
-        # 生成游戏ID
-        game_id = game.get('id') or re.sub(r'[^a-z0-9-]', '-', game.get('title', '').lower())
+        now = datetime.now(pytz.timezone('Asia/Shanghai'))
         
-        # 获取游戏分类
-        category = game.get('category', 'Action')
-        if isinstance(category, list) and category:
-            category = category[0]
+        # 从URL中提取ID
+        game_id = game.get('id', '')
+        if not game_id:
+            url = game.get('url', '')
+            game_id = url.split('/')[-1] if url else ''
         
-        # 确保评分在1-5之间
-        rating = float(game.get('rating', 0))
-        rating = max(1.0, min(5.0, rating))
-        
-        # 获取当前时间戳
-        now = datetime.now()
-        
-        # 转换为网站格式
-        site_format = {
+        # 基本游戏信息
+        site_game = {
             'title': game.get('title', ''),
             'url': game.get('url', ''),
             'thumbnailUrl': game.get('thumbnailUrl', ''),
             'id': game_id,
             'description': game.get('description', ''),
-            'instructions': game.get('instructions', ''),
-            'category': category,
-            'rating': rating,
-            'embedUrl': game.get('embedUrl', ''),
-            # 添加状态标记
-            'isNew': True,  # 新爬取的游戏默认标记为新游戏
-            'isFeatured': rating >= 4.5,  # 评分高的游戏标记为推荐
-            'status': 'New',  # 状态标记为新游戏
-            'addedDate': now.isoformat(),  # 添加时间戳
-            'lastUpdated': now.isoformat()  # 最后更新时间
+            'instructions': game.get('instructions', game.get('description', '')),
+            'category': game.get('category', 'Action'),
+            'rating': float(game.get('rating', 3.5)),
+            'embedUrl': game.get('embedUrl', '')
         }
         
-        return site_format
+        # 根据游戏ID的哈希值决定游戏状态
+        # 使用最后一个字符的ASCII值，保证分配均匀
+        last_char = game_id[-1] if game_id else 'a'
+        ascii_value = ord(last_char.lower())
+        
+        # 根据ASCII值对3取余，平均分配三种状态：
+        # 0: 新游戏 (isNew = true, isFeatured = false)
+        # 1: 推荐游戏 (isNew = false, isFeatured = true)
+        # 2: 普通游戏 (isNew = false, isFeatured = false)
+        state = ascii_value % 3
+        
+        site_game['isNew'] = state == 0
+        site_game['isFeatured'] = state == 1
+        
+        # 添加状态和时间戳
+        if site_game['isNew']:
+            site_game['status'] = 'New'
+        elif site_game['isFeatured']:
+            site_game['status'] = 'Featured'
+        else:
+            site_game['status'] = 'Normal'
+            
+        site_game['addedDate'] = now.isoformat()
+        site_game['lastUpdated'] = now.isoformat()
+        
+        return site_game
     
     def export_to_json(self, games):
         """导出游戏数据到JSON文件，适合网站导入"""

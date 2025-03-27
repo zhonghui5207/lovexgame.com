@@ -60,8 +60,10 @@ class CrawlerRequestHandler(BaseHTTPRequestHandler):
             self._handle_start_crawler()
         elif parsed_path.path == '/api/crawler/crawl-url':
             self._handle_crawl_url()
+        elif parsed_path.path == '/api/crawler/delete-game':
+            self._handle_delete_game()
         else:
-            self._handle_not_found()
+            self.send_error(404, "Not Found")
     
     def _handle_status(self):
         """处理状态请求"""
@@ -266,7 +268,7 @@ class CrawlerRequestHandler(BaseHTTPRequestHandler):
                         "games": existing_games
                     }
                     with open(IMPORT_FILE, 'w', encoding='utf-8') as f:
-                        json.dump(data, f, ensure_ascii=False, indent=2)
+                        json.dump(data, f, indent=2, ensure_ascii=False)
                     print(f"游戏数据已保存到 {IMPORT_FILE}")
                 except Exception as e:
                     print(f"保存导入文件出错: {str(e)}")
@@ -303,6 +305,46 @@ class CrawlerRequestHandler(BaseHTTPRequestHandler):
                 'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
             self.wfile.write(json.dumps(response, ensure_ascii=False).encode('utf-8'))
+    
+    def _handle_delete_game(self):
+        """处理删除游戏请求"""
+        try:
+            # 读取请求体中的游戏ID
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            game_data = json.loads(post_data.decode('utf-8'))
+            game_id = game_data.get('gameId')
+            
+            if not game_id:
+                self.send_error(400, "Missing gameId")
+                return
+            
+            # 读取现有游戏数据
+            with open(IMPORT_FILE, 'r', encoding='utf-8') as f:
+                import_data = json.load(f)
+            
+            # 从游戏列表中删除指定游戏
+            import_data['games'] = [g for g in import_data['games'] if g['id'] != game_id]
+            
+            # 更新时间戳
+            now = datetime.now()
+            import_data['lastUpdated'] = now.isoformat()
+            import_data['updateId'] = now.strftime('%Y%m%d_%H%M%S')
+            
+            # 保存回文件
+            with open(IMPORT_FILE, 'w', encoding='utf-8') as f:
+                json.dump(import_data, f, indent=2, ensure_ascii=False)
+            
+            # 返回成功响应
+            self._set_headers()
+            self.wfile.write(json.dumps({
+                'success': True,
+                'message': f'Successfully deleted game {game_id}'
+            }).encode())
+            
+        except Exception as e:
+            self.send_error(500, str(e))
+            traceback.print_exc()
 
 
 def run_server():

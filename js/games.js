@@ -282,6 +282,68 @@ function loadCategoryGames(categoryId) {
   }
 }
 
+// 从集合中删除游戏
+async function deleteGame(gameId) {
+  // 从 allGames 中删除
+  const gameIndex = allGames.findIndex(g => g.id === gameId);
+  if (gameIndex === -1) return false;
+  
+  allGames.splice(gameIndex, 1);
+  
+  // 从其他集合中删除
+  featuredGames = featuredGames.filter(g => g.id !== gameId);
+  popularGames = popularGames.filter(g => g.id !== gameId);
+  newGames = newGames.filter(g => g.id !== gameId);
+  
+  // 更新本地存储
+  localStorage.setItem(STORAGE_KEYS.GAMES, JSON.stringify(allGames));
+  
+  // 通过爬虫API删除游戏
+  try {
+    const response = await fetch('http://localhost:8001/api/crawler/delete-game', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ gameId })
+    });
+    
+    if (!response.ok) {
+      console.error('删除游戏失败:', await response.text());
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('删除游戏时出错:', error);
+    return false;
+  }
+}
+
+// 保存游戏数据到文件的 API 处理函数
+async function handleSaveGames(req, res) {
+  if (req.method !== 'POST') {
+    res.status(405).send('Method Not Allowed');
+    return;
+  }
+
+  try {
+    const data = req.body;
+    const filePath = path.join(process.cwd(), 'scripts', 'games_for_import.json');
+    
+    // 格式化 JSON 以便于阅读
+    const jsonString = JSON.stringify(data, null, 2);
+    
+    // 写入文件
+    await fs.promises.writeFile(filePath, jsonString, 'utf8');
+    
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('保存游戏数据时出错:', error);
+    res.status(500).json({ error: error.message });
+  }
+}
+
 // Game categories
 gameCategories = [
   { id: 'action', name: 'Action', color: '#FF5252' },
@@ -802,48 +864,34 @@ function getGameCountByCategory(category) {
   ).length;
 }
 
+// 格式化分类名称
+function formatCategory(category) {
+  if (!category) return 'Action';
+  // 首字母大写，其余小写
+  return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+}
+
 // Add a new game to the collection
 function addGame(collection, gameData) {
-  if (!gameData.id || !gameData.title || !gameData.embedUrl || !gameData.category) {
+  // 检查游戏是否已存在
+  const existingGame = collection.find(g => g.id === gameData.id);
+  if (existingGame) {
+    // 更新现有游戏数据
+    Object.assign(existingGame, {
+      ...gameData,
+      category: formatCategory(gameData.category), // 格式化分类名称
+      lastUpdated: new Date().toISOString()
+    });
     return false;
   }
-  
-  const newGame = {
-    description: '',
-    thumbnailUrl: '',
-    rating: 4.0,
-    dateAdded: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-    instructions: '',
-    isFeatured: false,
-    isNew: true,
-    ...gameData
-  };
-  
-  switch (collection) {
-    case 'featured':
-      featuredGames.push(newGame);
-      break;
-    case 'popular':
-      popularGames.push(newGame);
-      break;
-    case 'new':
-      newGames.push(newGame);
-      break;
-    default:
-      return false;
-  }
-  
-  if (!allGames.some(game => game.id === newGame.id)) {
-    allGames.push(newGame);
-  }
-  
-  if (document.readyState === 'complete') {
-    const container = document.getElementById(`${collection}-games`);
-    if (container) {
-      container.appendChild(createGameCard(newGame));
-    }
-  }
-  
+
+  // 添加新游戏
+  collection.push({
+    ...gameData,
+    category: formatCategory(gameData.category), // 格式化分类名称
+    lastUpdated: new Date().toISOString(),
+    isNew: true
+  });
   return true;
 }
 
