@@ -1,130 +1,128 @@
+// 存储键名常量
+const STORAGE_KEYS = {
+  GAMES: 'lovexgames_games',
+  UPDATE_ID: 'lovexgames_update_id',
+  CATEGORIES: 'lovexgames_categories'
+};
+
 // Games Data
 let featuredGames = [];
 let popularGames = [];
 let newGames = [];
 let allGames = []; // Global variable to store all games
+let gameCategories = [];
 
 // Load games data from local storage
-function loadGamesFromStorage() {
+async function loadGamesFromStorage() {
   // Try to get games data from localStorage
-  const storedGames = localStorage.getItem('lovexgames_games');
+  const storedGames = localStorage.getItem(STORAGE_KEYS.GAMES);
   
   if (storedGames) {
-    allGames = JSON.parse(storedGames); // Save all games to global variable
-    
-    // Categorize games based on status
-    featuredGames = allGames.filter(game => game.status === 'Featured' || game.isFeatured);
-    newGames = allGames.filter(game => game.status === 'New' || game.isNew);
-    
-    // Other games as popular games
-    popularGames = allGames.filter(game => 
-      (!game.status || (game.status !== 'Featured' && game.status !== 'New')) && 
-      !game.isFeatured && !game.isNew
-    );
-  } else {
-    // If no games data in localStorage, try to load from games_for_import.json
-    loadGamesFromImportFile();
+    try {
+      allGames = JSON.parse(storedGames); // Save all games to global variable
+    } catch (error) {
+      console.error('解析游戏数据失败:', error);
+      allGames = [];
+    }
   }
+  
+  // 如果没有数据，尝试从远程加载
+  if (allGames.length === 0) {
+    await checkAndUpdateGames();
+  }
+  
+  // Categorize games based on status
+  featuredGames = allGames.filter(game => game.status === 'Featured' || game.isFeatured);
+  newGames = allGames.filter(game => game.status === 'New' || game.isNew);
+  
+  // Other games as popular games
+  popularGames = allGames.filter(game => 
+    (!game.status || (game.status !== 'Featured' && game.status !== 'New')) && 
+    !game.isFeatured && !game.isNew
+  );
 }
 
 // Load games data from games_for_import.json
-function loadGamesFromImportFile() {
+async function loadGamesFromImportFile() {
   // 使用正确的路径加载游戏数据
-  fetch('/scripts/games_for_import.json')
-    .then(response => {
-      if (!response.ok) {
-        // 尝试使用相对路径
-        return fetch('scripts/games_for_import.json');
+  try {
+    const response = await fetch('scripts/games_for_import.json');
+    const importGames = await response.json();
+    
+    // Add ID for each game (if not exists)
+    allGames = importGames.map(game => {
+      // Generate ID if game doesn't have one
+      if (!game.id) {
+        // Generate ID using title and timestamp
+        const timestamp = Date.now();
+        const randomNum = Math.floor(Math.random() * 1000);
+        game.id = `game-${timestamp}-${randomNum}`;
       }
-      return response.json();
-    })
-    .then(response => {
-      if (response.ok === false) {
-        // 如果第二次尝试也失败，则返回空数组
-        return [];
-      }
-      // 如果是正常的JSON响应，直接返回
-      if (Array.isArray(response)) {
-        return response;
-      }
-      // 否则尝试解析JSON
-      return response.json();
-    })
-    .then(importGames => {
-      if (!importGames || importGames.length === 0) {
-        // 使用硬编码的示例游戏数据
-        importGames = [
-          {
-            id: "voxiom-io",
-            title: "Voxiom.io",
-            category: "Action",
-            thumbnailUrl: "https://imgs.crazygames.com/voxiom-io_16x9/20250325203708/voxiom-io_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
-            description: "Voxiom.io is a 3D real-time multiplayer first-person voxel shooter featuring destructible maps.",
-            rating: 4.4,
-            embedUrl: "https://www.crazygames.com/embed/voxiom-io"
-          },
-          {
-            id: "bullet-force-multiplayer",
-            title: "Bullet Force",
-            category: "Action",
-            thumbnailUrl: "https://imgs.crazygames.com/bullet-force-multiplayer_16x9/20250323203709/bullet-force-multiplayer_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
-            description: "Bullet Force is a modern 3D first-person shooter with great graphics and addictive gameplay.",
-            rating: 4.2,
-            embedUrl: "https://www.crazygames.com/embed/bullet-force-multiplayer"
-          },
-          {
-            id: "forward-assault",
-            title: "Forward Assault",
-            category: "Action",
-            thumbnailUrl: "https://imgs.crazygames.com/forward-assault_16x9/20250325203708/forward-assault_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
-            description: "Forward Assault is a first-person shooter game inspired by Counter-Strike.",
-            rating: 4.3,
-            embedUrl: "https://www.crazygames.com/embed/forward-assault"
-          }
-        ];
-      }
-      
-      // Add ID for each game (if not exists)
-      allGames = importGames.map(game => {
-        // Generate ID if game doesn't have one
-        if (!game.id) {
-          // Generate ID using title and timestamp
-          const timestamp = Date.now();
-          const randomNum = Math.floor(Math.random() * 1000);
-          game.id = `game-${timestamp}-${randomNum}`;
-        }
-        return game;
-      });
-      
-      // Save to localStorage
-      localStorage.setItem('lovexgames_games', JSON.stringify(allGames));
-      
-      // Categorize games based on status
-      featuredGames = allGames.slice(0, 3); // First 3 as featured games
-      newGames = allGames.slice(3, 8); // Next 5 as new games
-      popularGames = allGames.slice(8); // Remaining as popular games
-      
-      // Reload games on the page
-      if (document.getElementById('featured-games') || 
-          document.getElementById('popular-games') || 
-          document.getElementById('new-games')) {
-        loadHomePageGames();
-      }
-      
-      // 如果在分类页面，重新加载分类游戏
-      if (document.getElementById('category-games')) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const categoryId = urlParams.get('id');
-        if (categoryId) {
-          loadCategoryGames(categoryId);
-        }
-      }
-    })
-    .catch(error => {
-      featuredGames = [];
-      popularGames = [];
-      newGames = [];
+      return game;
     });
+    
+    // Save to localStorage
+    localStorage.setItem(STORAGE_KEYS.GAMES, JSON.stringify(allGames));
+    localStorage.setItem(STORAGE_KEYS.UPDATE_ID, importGames.updateId);
+    
+    // Categorize games based on status
+    featuredGames = allGames.slice(0, 3); // First 3 as featured games
+    newGames = allGames.slice(3, 8); // Next 5 as new games
+    popularGames = allGames.slice(8); // Remaining as popular games
+    
+    // Reload games on the page
+    if (document.getElementById('featured-games') || 
+        document.getElementById('popular-games') || 
+        document.getElementById('new-games')) {
+      loadHomePageGames();
+    }
+    
+    // 如果在分类页面，重新加载分类游戏
+    if (document.getElementById('category-games')) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const categoryId = urlParams.get('id');
+      if (categoryId) {
+        loadCategoryGames(categoryId);
+      }
+    }
+  } catch (error) {
+    console.error('加载游戏数据失败:', error);
+    featuredGames = [];
+    popularGames = [];
+    newGames = [];
+  }
+}
+
+// 检查并更新游戏数据
+async function checkAndUpdateGames() {
+  try {
+    // 获取远程数据
+    const response = await fetch('scripts/games_for_import.json');
+    const remoteData = await response.json();
+    
+    // 获取本地更新ID
+    const localUpdateId = localStorage.getItem(STORAGE_KEYS.UPDATE_ID);
+    
+    // 如果没有本地更新ID或更新ID不同，则更新数据
+    if (!localUpdateId || localUpdateId !== remoteData.updateId) {
+      console.log('发现新的游戏数据更新:', remoteData.updateId);
+      
+      // 更新游戏数据
+      localStorage.setItem(STORAGE_KEYS.GAMES, JSON.stringify(remoteData.games));
+      // 更新更新ID
+      localStorage.setItem(STORAGE_KEYS.UPDATE_ID, remoteData.updateId);
+      
+      // 更新全局变量
+      allGames = remoteData.games;
+      
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('检查游戏更新失败:', error);
+    return false;
+  }
 }
 
 // Load games for the home page
@@ -219,7 +217,7 @@ function loadCategoryGames(categoryId) {
 }
 
 // Game categories
-const gameCategories = [
+gameCategories = [
   { id: 'action', name: 'Action', color: '#FF5252' },
   { id: 'adventure', name: 'Adventure', color: '#FF9800' },
   { id: 'puzzle', name: 'Puzzle', color: '#2196F3' },
@@ -236,9 +234,10 @@ allGames = [...featuredGames, ...popularGames, ...newGames].filter((game, index,
 );
 
 // DOM Elements
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   // Check if we're on the home page
   if (document.getElementById('featured-games')) {
+    await initializeGameData();
     loadHomePageGames();
     loadGameCategories();
   }
@@ -272,6 +271,44 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+// 初始化函数
+async function initializeGameData() {
+  // 先从localStorage加载数据
+  await loadGamesFromStorage();
+  
+  // 检查更新
+  const updated = await checkAndUpdateGames();
+  if (updated) {
+    // 如果有更新，重新加载页面内容
+    updatePageContent();
+  }
+}
+
+// 更新页面内容
+function updatePageContent() {
+  // 根据当前页面类型更新内容
+  const currentPath = window.location.pathname;
+  
+  if (currentPath.endsWith('game.html')) {
+    // 在游戏详情页
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameId = urlParams.get('id');
+    if (gameId) {
+      loadGameDetails(gameId);
+    }
+  } else if (currentPath.endsWith('category.html')) {
+    // 在分类页面
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryId = urlParams.get('id');
+    if (categoryId) {
+      loadCategoryGames(categoryId);
+    }
+  } else {
+    // 在首页
+    loadHomePageGames();
+  }
+}
 
 // Load game categories
 function loadGameCategories() {
@@ -353,7 +390,7 @@ function loadGameDetails(gameId) {
           });
           
           // Save to localStorage
-          localStorage.setItem('lovexgames_games', JSON.stringify(allGames));
+          localStorage.setItem(STORAGE_KEYS.GAMES, JSON.stringify(allGames));
           
           processGameDetails(gameId);
         })

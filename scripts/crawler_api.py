@@ -125,9 +125,33 @@ class CrawlerRequestHandler(BaseHTTPRequestHandler):
                     site_game = crawler._convert_to_site_format(game)
                     site_format_games.append(site_game)
                 
-                # 保存到导入文件
+                # 读取现有的导入文件
+                try:
+                    with open(IMPORT_FILE, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                        if isinstance(data, dict) and 'games' in data:
+                            existing_games = data['games']
+                        else:
+                            existing_games = []
+                except Exception as e:
+                    print(f"读取导入文件出错或文件不存在: {str(e)}")
+                    existing_games = []
+                
+                # 合并游戏数据
+                games_dict = {game['url']: game for game in existing_games}
+                for game in site_format_games:
+                    games_dict[game['url']] = game
+                merged_games = list(games_dict.values())
+                
+                # 保存到导入文件，使用新格式
+                now = datetime.now()
+                data = {
+                    "updateId": now.strftime("%Y%m%d_%H%M%S"),
+                    "lastUpdated": now.isoformat(),
+                    "games": merged_games
+                }
                 with open(IMPORT_FILE, 'w', encoding='utf-8') as f:
-                    json.dump(site_format_games, f, ensure_ascii=False, indent=2)
+                    json.dump(data, f, ensure_ascii=False, indent=2)
                 
                 print(f"游戏数据已保存到 {IMPORT_FILE}")
                 
@@ -206,16 +230,18 @@ class CrawlerRequestHandler(BaseHTTPRequestHandler):
                 print(f"游戏数据已转换为网站格式: {site_format_game['title']}")
                 
                 # 读取现有的导入文件
-                existing_games = []
-                if os.path.exists(IMPORT_FILE):
-                    try:
-                        with open(IMPORT_FILE, 'r', encoding='utf-8') as f:
-                            existing_games = json.load(f)
+                try:
+                    with open(IMPORT_FILE, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                        if isinstance(data, dict) and 'games' in data:
+                            existing_games = data['games']
+                        else:
+                            existing_games = []
                         print(f"已读取现有导入文件，包含 {len(existing_games)} 个游戏")
-                    except Exception as e:
-                        print(f"读取导入文件出错: {str(e)}")
-                        existing_games = []
-                
+                except Exception as e:
+                    print(f"读取导入文件出错或文件不存在: {str(e)}")
+                    existing_games = []
+
                 # 检查是否已存在相同URL的游戏
                 exists = False
                 for i, game in enumerate(existing_games):
@@ -231,10 +257,16 @@ class CrawlerRequestHandler(BaseHTTPRequestHandler):
                     existing_games.append(site_format_game)
                     print(f"添加新游戏: {site_format_game['title']}")
                 
-                # 保存回文件
+                # 保存回文件，使用新格式
                 try:
+                    now = datetime.now()
+                    data = {
+                        "updateId": now.strftime("%Y%m%d_%H%M%S"),
+                        "lastUpdated": now.isoformat(),
+                        "games": existing_games
+                    }
                     with open(IMPORT_FILE, 'w', encoding='utf-8') as f:
-                        json.dump(existing_games, f, ensure_ascii=False, indent=2)
+                        json.dump(data, f, ensure_ascii=False, indent=2)
                     print(f"游戏数据已保存到 {IMPORT_FILE}")
                 except Exception as e:
                     print(f"保存导入文件出错: {str(e)}")

@@ -667,14 +667,15 @@
                         // 解析JSON数据
                         const jsonData = JSON.parse(xhr.responseText);
                         
-                        console.log('游戏数据解析完成，数据类型:', typeof jsonData, '是否为数组:', Array.isArray(jsonData), '长度:', jsonData.length);
-                        console.log('游戏数据前3项:', JSON.stringify(jsonData.slice(0, 3)));
+                        console.log('游戏数据解析完成，数据类型:', typeof jsonData);
                         
-                        // 检查是否有游戏数据
-                        if (jsonData && Array.isArray(jsonData)) {
-                            gamesData = jsonData;
+                        // 检查新的数据格式
+                        if (jsonData && jsonData.games && Array.isArray(jsonData.games)) {
+                            gamesData = jsonData.games;
                             console.log(`成功加载 ${gamesData.length} 个游戏，开始渲染...`);
-                            crawlerLog.success(`成功加载 ${gamesData.length} 个游戏`);
+                            console.log('更新ID:', jsonData.updateId);
+                            console.log('最后更新时间:', jsonData.lastUpdated);
+                            crawlerLog.success(`成功加载 ${gamesData.length} 个游戏，更新ID: ${jsonData.updateId}`);
                             renderGames(gamesData);
                         } else {
                             console.error('游戏数据格式不正确:', jsonData);

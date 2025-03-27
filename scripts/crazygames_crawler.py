@@ -18,6 +18,7 @@ from urllib.parse import urljoin
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill
 from datetime import datetime
+import pytz
 
 # 配置
 class Config:
@@ -533,11 +534,40 @@ class CrazyGamesCrawler:
             return False
 
 
+def load_existing_games():
+    """加载现有的游戏数据"""
+    try:
+        with open('scripts/games_for_import.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            return data.get('games', [])
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+def merge_games(existing_games, new_games):
+    """合并新旧游戏数据，使用id作为唯一标识"""
+    games_dict = {game['id']: game for game in existing_games}
+    
+    # 更新现有游戏或添加新游戏
+    for game in new_games:
+        games_dict[game['id']] = game
+    
+    return list(games_dict.values())
+
+def save_games_data(games):
+    """保存游戏数据，包括更新ID和时间戳"""
+    now = datetime.now(pytz.timezone('Asia/Shanghai'))
+    data = {
+        "updateId": now.strftime("%Y%m%d_%H%M%S"),
+        "lastUpdated": now.isoformat(),
+        "games": games
+    }
+    
+    with open('scripts/games_for_import.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
 def main():
-    """主函数"""
-    print("=" * 50)
-    print("CrazyGames游戏爬虫")
-    print("=" * 50)
+    # 加载现有游戏数据
+    existing_games = load_existing_games()
     
     # 初始化爬虫
     crawler = CrazyGamesCrawler()
@@ -586,6 +616,12 @@ def main():
     
     # 爬取游戏
     games = crawler.get_games_by_category(selected_category, limit)
+    
+    # 合并游戏数据
+    all_games = merge_games(existing_games, games)
+    
+    # 保存更新后的数据
+    save_games_data(all_games)
     
     # 导出数据
     if games:

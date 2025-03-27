@@ -1,112 +1,226 @@
-[
-  {
-    "title": "Hazmob FPS: Online Shooter",
-    "url": "https://www.crazygames.com/game/hazmob-fps-online-shooter",
-    "thumbnailUrl": "https://imgs.crazygames.com/hazmob-fps-online-shooter_16x9/20240607181337/hazmob-fps-online-shooter_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
-    "id": "hazmob-fps-online-shooter",
-    "description": "Hazmob FPS: Online Shooter is a multiplayer shooting FPS game where every second counts! Play against other players across multiple game modes in non-stop combat. This first-person shooter game is ideal for those seeking a bit of thrill.",
-    "instructions": "Hazmob FPS: Online Shooter is a multiplayer shooting FPS game where every second counts! Play against other players across multiple game modes in non-stop combat. This first-person shooter game is ideal for those seeking a bit of thrill.",
-    "category": "Simulation",
-    "rating": 3.8,
-    "embedUrl": "https://www.crazygames.com/embed/hazmob-fps-online-shooter"
-  },
-  {
-    "title": "SkillWarz",
-    "url": "https://www.crazygames.com/game/skillwarz",
-    "thumbnailUrl": "https://imgs.crazygames.com/skillwarz_16x9/20250225074000/skillwarz_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
-    "id": "skillwarz",
-    "description": "SkillWarz is a fast-paced first-person shooter offering advanced movement mechanics and diverse game modes like Deathmatch, Gun Game, and Skull Hunt. Navigate through dynamic day and night maps featuring bounce pads, teleports, and battle pickups. Unlock unique classes, customize your gear, and challenge others or practice against bots in action-packed matches tailored to your style.",
-    "instructions": "SkillWarz is a fast-paced first-person shooter offering advanced movement mechanics and diverse game modes like Deathmatch, Gun Game, and Skull Hunt. Navigate through dynamic day and night maps featuring bounce pads, teleports, and battle pickups. Unlock unique classes, customize your gear, and challenge others or practice against bots in action-packed matches tailored to your style.",
-    "category": "Horror",
-    "rating": 4.6,
-    "embedUrl": "https://www.crazygames.com/embed/skillwarz"
-  },
-  {
-    "title": "Bullet Force",
-    "url": "https://www.crazygames.com/game/bullet-force-multiplayer",
-    "thumbnailUrl": "https://imgs.crazygames.com/bullet-force-multiplayer_16x9/20250323203709/bullet-force-multiplayer_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
-    "id": "bullet-force-multiplayer",
-    "description": "Bullet Force is an online multiplayer FPS game featuring fast-paced action. Battle against other players on tactical maps using a range of weapons at your disposal. Crate custom games and buy new perks to improve your character.",
-    "instructions": "Bullet Force is an online multiplayer FPS game featuring fast-paced action. Battle against other players on tactical maps using a range of weapons at your disposal. Crate custom games and buy new perks to improve your character.",
-    "category": "Racing",
-    "rating": 4.7,
-    "embedUrl": "https://www.crazygames.com/embed/bullet-force-multiplayer"
-  },
-  {
-    "title": "Time Shooter 2",
-    "url": "https://www.crazygames.com/game/time-shooter-2",
-    "thumbnailUrl": "https://imgs.crazygames.com/time-shooter-2_16x9/20241113040556/time-shooter-2_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
-    "id": "time-shooter-2",
-    "description": "Time Shooter 2 is a first-person shooter where time stands still until you move. Plan your shots and moves carefully. Dodge enemy fire in epic slo-mo combat and make your way around the map using time to your advantage.",
-    "instructions": "Time Shooter 2 is a first-person shooter where time stands still until you move. Plan your shots and moves carefully. Dodge enemy fire in epic slo-mo combat and make your way around the map using time to your advantage.",
-    "category": "Strategy",
-    "rating": 4.1,
-    "embedUrl": "https://www.crazygames.com/embed/time-shooter-2"
-  },
-  {
-    "title": "Voxiom.io",
-    "url": "https://www.crazygames.com/game/voxiom-io",
-    "thumbnailUrl": "https://imgs.crazygames.com/games/voxiom-io/cover_16x9-1714408559317.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
-    "id": "voxiom-io",
-    "description": "Voxiom.io is a 3D real-time multiplayer first-person voxel shooter featuring destructible maps. The game is inspired by popular titles, such as Minecraft, Fortnite, Counter-Strike, and Call of Duty. Currently, the game features 4 game modes: capture the gems, battle royale, survival, and free-for-all. Build, craft, and shoot strategically to achieve victory!",
-    "instructions": "Voxiom.io is a 3D real-time multiplayer first-person voxel shooter featuring destructible maps. The game is inspired by popular titles, such as Minecraft, Fortnite, Counter-Strike, and Call of Duty. Currently, the game features 4 game modes: capture the gems, battle royale, survival, and free-for-all. Build, craft, and shoot strategically to achieve victory!",
-    "category": "Action",
-    "rating": 4.4,
-    "embedUrl": "https://www.crazygames.com/embed/voxiom-io"
-  },
-  {
-    "title": "Krunker.io",
-    "url": "https://www.crazygames.com/game/krunker-io",
-    "thumbnailUrl": "https://imgs.crazygames.com/games/krunker-io/cover-1591336739727.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
-    "id": "krunker-io",
-    "description": "Krunker is a fast-paced, pixelated first-person shooter game. In this game, players drop into a pixelated landscape to fight against other players worldwide. Krunker.io can be played casually to pass the time or seriously in competition against other die-hard FPS fanatics.",
-    "instructions": "Krunker is a fast-paced, pixelated first-person shooter game. In this game, players drop into a pixelated landscape to fight against other players worldwide. Krunker.io can be played casually to pass the time or seriously in competition against other die-hard FPS fanatics.",
-    "category": "Puzzle",
-    "rating": 4.3,
-    "embedUrl": "https://www.crazygames.com/embed/krunker-io"
-  },
-  {
-    "title": "Shell Shockers",
-    "url": "https://www.crazygames.com/game/shellshockersio",
-    "thumbnailUrl": "https://imgs.crazygames.com/shellshockersio_16x9/20250319203901/shellshockersio_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
-    "id": "shellshockersio",
-    "description": "Shell Shockers (Shellshock.io) is a multiplayer .io FPS game featuring eggs armed with guns. You control one of these weapon-wielding eggs in one of four online game modes where the aim is to shatter your opponents with bullets and bombs. It&#39;s the ultimate online egg shooting game!",
-    "instructions": "Shell Shockers (Shellshock.io) is a multiplayer .io FPS game featuring eggs armed with guns. You control one of these weapon-wielding eggs in one of four online game modes where the aim is to shatter your opponents with bullets and bombs. It&#39;s the ultimate online egg shooting game!",
-    "category": "Horror",
-    "rating": 3.9,
-    "embedUrl": "https://www.crazygames.com/embed/shellshockersio"
-  },
-  {
-    "title": "Ev.io",
-    "url": "https://www.crazygames.com/game/ev-io",
-    "thumbnailUrl": "https://imgs.crazygames.com/games/ev-io/cover_16x9-1702303918732.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
-    "id": "ev-io",
-    "description": "Ev.io is a multiplayer FPS game set in a futuristic arena. The game features tactical-level designs similar to Halo, Destiny, and Quake. You have various weapons and abilities that can be used to your advantage on the battlefield. Click to jump straight into the fight!",
-    "instructions": "Ev.io is a multiplayer FPS game set in a futuristic arena. The game features tactical-level designs similar to Halo, Destiny, and Quake. You have various weapons and abilities that can be used to your advantage on the battlefield. Click to jump straight into the fight!",
-    "category": "Racing",
-    "rating": 4.7,
-    "embedUrl": "https://www.crazygames.com/embed/ev-io"
-  },
-  {
-    "title": "1v1.lol",
-    "url": "https://www.crazygames.com/game/1v1-lol",
-    "thumbnailUrl": "https://imgs.crazygames.com/games/1v1-lol/cover-1585728351086.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
-    "id": "1v1-lol",
-    "description": "1v1.lol is a competitive online third-person shooter where you build your way around the map tactically. You can build platforms, ramps, and walls to aid your defenses and gain an advantage. The main game mode is 1v1 battle royale, where the winner is the last player standing.",
-    "instructions": "1v1.lol is a competitive online third-person shooter where you build your way around the map tactically. You can build platforms, ramps, and walls to aid your defenses and gain an advantage. The main game mode is 1v1 battle royale, where the winner is the last player standing.",
-    "category": "Racing",
-    "rating": 3.2,
-    "embedUrl": "https://www.crazygames.com/embed/1v1-lol"
-  },
-  {
-    "title": "Getaway Shootout",
-    "url": "https://www.crazygames.com/game/getaway-shootout",
-    "thumbnailUrl": "https://imgs.crazygames.com/getaway-shootout_16x9/20241230044730/getaway-shootout_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
-    "id": "getaway-shootout",
-    "description": "Getaway Shooter is a chaotic two-player game where you race three others to the finish line. Your moves are limited, and you can only move by jumping left or right, making the race tricky! Pick up guns and other weapons along the way to use against the others. May the best player win!",
-    "instructions": "Getaway Shooter is a chaotic two-player game where you race three others to the finish line. Your moves are limited, and you can only move by jumping left or right, making the race tricky! Pick up guns and other weapons along the way to use against the others. May the best player win!",
-    "category": "Racing",
-    "rating": 4.0,
-    "embedUrl": "https://www.crazygames.com/embed/getaway-shootout"
-  }
-]
+{
+  "updateId": "20250327_110922",
+  "lastUpdated": "2025-03-27T11:09:22.684115",
+  "games": [
+    {
+      "title": "Hazmob FPS: Online Shooter",
+      "url": "https://www.crazygames.com/game/hazmob-fps-online-shooter",
+      "thumbnailUrl": "https://imgs.crazygames.com/hazmob-fps-online-shooter_16x9/20240607181337/hazmob-fps-online-shooter_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "hazmob-fps-online-shooter",
+      "description": "Hazmob FPS: Online Shooter is a multiplayer shooting FPS game where every second counts! Play against other players across multiple game modes in non-stop combat. This first-person shooter game is ideal for those seeking a bit of thrill.",
+      "instructions": "Hazmob FPS: Online Shooter is a multiplayer shooting FPS game where every second counts! Play against other players across multiple game modes in non-stop combat. This first-person shooter game is ideal for those seeking a bit of thrill.",
+      "category": "Simulation",
+      "rating": 3.8,
+      "embedUrl": "https://www.crazygames.com/embed/hazmob-fps-online-shooter"
+    },
+    {
+      "title": "SkillWarz",
+      "url": "https://www.crazygames.com/game/skillwarz",
+      "thumbnailUrl": "https://imgs.crazygames.com/skillwarz_16x9/20250225074000/skillwarz_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "skillwarz",
+      "description": "SkillWarz is a fast-paced first-person shooter offering advanced movement mechanics and diverse game modes like Deathmatch, Gun Game, and Skull Hunt. Navigate through dynamic day and night maps featuring bounce pads, teleports, and battle pickups. Unlock unique classes, customize your gear, and challenge others or practice against bots in action-packed matches tailored to your style.",
+      "instructions": "SkillWarz is a fast-paced first-person shooter offering advanced movement mechanics and diverse game modes like Deathmatch, Gun Game, and Skull Hunt. Navigate through dynamic day and night maps featuring bounce pads, teleports, and battle pickups. Unlock unique classes, customize your gear, and challenge others or practice against bots in action-packed matches tailored to your style.",
+      "category": "Horror",
+      "rating": 4.6,
+      "embedUrl": "https://www.crazygames.com/embed/skillwarz"
+    },
+    {
+      "title": "Bullet Force",
+      "url": "https://www.crazygames.com/game/bullet-force-multiplayer",
+      "thumbnailUrl": "https://imgs.crazygames.com/bullet-force-multiplayer_16x9/20250323203709/bullet-force-multiplayer_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "bullet-force-multiplayer",
+      "description": "Bullet Force is an online multiplayer FPS game featuring fast-paced action. Battle against other players on tactical maps using a range of weapons at your disposal. Crate custom games and buy new perks to improve your character.",
+      "instructions": "Bullet Force is an online multiplayer FPS game featuring fast-paced action. Battle against other players on tactical maps using a range of weapons at your disposal. Crate custom games and buy new perks to improve your character.",
+      "category": "Racing",
+      "rating": 4.7,
+      "embedUrl": "https://www.crazygames.com/embed/bullet-force-multiplayer"
+    },
+    {
+      "title": "Time Shooter 2",
+      "url": "https://www.crazygames.com/game/time-shooter-2",
+      "thumbnailUrl": "https://imgs.crazygames.com/time-shooter-2_16x9/20241113040556/time-shooter-2_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "time-shooter-2",
+      "description": "Time Shooter 2 is a first-person shooter where time stands still until you move. Plan your shots and moves carefully. Dodge enemy fire in epic slo-mo combat and make your way around the map using time to your advantage.",
+      "instructions": "Time Shooter 2 is a first-person shooter where time stands still until you move. Plan your shots and moves carefully. Dodge enemy fire in epic slo-mo combat and make your way around the map using time to your advantage.",
+      "category": "Strategy",
+      "rating": 4.1,
+      "embedUrl": "https://www.crazygames.com/embed/time-shooter-2"
+    },
+    {
+      "title": "Voxiom.io",
+      "url": "https://www.crazygames.com/game/voxiom-io",
+      "thumbnailUrl": "https://imgs.crazygames.com/games/voxiom-io/cover_16x9-1714408559317.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "voxiom-io",
+      "description": "Voxiom.io is a 3D real-time multiplayer first-person voxel shooter featuring destructible maps. The game is inspired by popular titles, such as Minecraft, Fortnite, Counter-Strike, and Call of Duty. Currently, the game features 4 game modes: capture the gems, battle royale, survival, and free-for-all. Build, craft, and shoot strategically to achieve victory!",
+      "instructions": "Voxiom.io is a 3D real-time multiplayer first-person voxel shooter featuring destructible maps. The game is inspired by popular titles, such as Minecraft, Fortnite, Counter-Strike, and Call of Duty. Currently, the game features 4 game modes: capture the gems, battle royale, survival, and free-for-all. Build, craft, and shoot strategically to achieve victory!",
+      "category": "Action",
+      "rating": 4.4,
+      "embedUrl": "https://www.crazygames.com/embed/voxiom-io"
+    },
+    {
+      "title": "Krunker.io",
+      "url": "https://www.crazygames.com/game/krunker-io",
+      "thumbnailUrl": "https://imgs.crazygames.com/games/krunker-io/cover-1591336739727.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "krunker-io",
+      "description": "Krunker is a fast-paced, pixelated first-person shooter game. In this game, players drop into a pixelated landscape to fight against other players worldwide. Krunker.io can be played casually to pass the time or seriously in competition against other die-hard FPS fanatics.",
+      "instructions": "Krunker is a fast-paced, pixelated first-person shooter game. In this game, players drop into a pixelated landscape to fight against other players worldwide. Krunker.io can be played casually to pass the time or seriously in competition against other die-hard FPS fanatics.",
+      "category": "Puzzle",
+      "rating": 4.3,
+      "embedUrl": "https://www.crazygames.com/embed/krunker-io"
+    },
+    {
+      "title": "Shell Shockers",
+      "url": "https://www.crazygames.com/game/shellshockersio",
+      "thumbnailUrl": "https://imgs.crazygames.com/shellshockersio_16x9/20250319203901/shellshockersio_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "shellshockersio",
+      "description": "Shell Shockers (Shellshock.io) is a multiplayer .io FPS game featuring eggs armed with guns. You control one of these weapon-wielding eggs in one of four online game modes where the aim is to shatter your opponents with bullets and bombs. It&#39;s the ultimate online egg shooting game!",
+      "instructions": "Shell Shockers (Shellshock.io) is a multiplayer .io FPS game featuring eggs armed with guns. You control one of these weapon-wielding eggs in one of four online game modes where the aim is to shatter your opponents with bullets and bombs. It&#39;s the ultimate online egg shooting game!",
+      "category": "Horror",
+      "rating": 3.9,
+      "embedUrl": "https://www.crazygames.com/embed/shellshockersio"
+    },
+    {
+      "title": "Ev.io",
+      "url": "https://www.crazygames.com/game/ev-io",
+      "thumbnailUrl": "https://imgs.crazygames.com/games/ev-io/cover_16x9-1702303918732.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "ev-io",
+      "description": "Ev.io is a multiplayer FPS game set in a futuristic arena. The game features tactical-level designs similar to Halo, Destiny, and Quake. You have various weapons and abilities that can be used to your advantage on the battlefield. Click to jump straight into the fight!",
+      "instructions": "Ev.io is a multiplayer FPS game set in a futuristic arena. The game features tactical-level designs similar to Halo, Destiny, and Quake. You have various weapons and abilities that can be used to your advantage on the battlefield. Click to jump straight into the fight!",
+      "category": "Racing",
+      "rating": 4.7,
+      "embedUrl": "https://www.crazygames.com/embed/ev-io"
+    },
+    {
+      "title": "1v1.lol",
+      "url": "https://www.crazygames.com/game/1v1-lol",
+      "thumbnailUrl": "https://imgs.crazygames.com/games/1v1-lol/cover-1585728351086.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "1v1-lol",
+      "description": "1v1.lol is a competitive online third-person shooter where you build your way around the map tactically. You can build platforms, ramps, and walls to aid your defenses and gain an advantage. The main game mode is 1v1 battle royale, where the winner is the last player standing.",
+      "instructions": "1v1.lol is a competitive online third-person shooter where you build your way around the map tactically. You can build platforms, ramps, and walls to aid your defenses and gain an advantage. The main game mode is 1v1 battle royale, where the winner is the last player standing.",
+      "category": "Racing",
+      "rating": 3.2,
+      "embedUrl": "https://www.crazygames.com/embed/1v1-lol"
+    },
+    {
+      "title": "Getaway Shootout",
+      "url": "https://www.crazygames.com/game/getaway-shootout",
+      "thumbnailUrl": "https://imgs.crazygames.com/getaway-shootout_16x9/20241230044730/getaway-shootout_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "getaway-shootout",
+      "description": "Getaway Shooter is a chaotic two-player game where you race three others to the finish line. Your moves are limited, and you can only move by jumping left or right, making the race tricky! Pick up guns and other weapons along the way to use against the others. May the best player win!",
+      "instructions": "Getaway Shooter is a chaotic two-player game where you race three others to the finish line. Your moves are limited, and you can only move by jumping left or right, making the race tricky! Pick up guns and other weapons along the way to use against the others. May the best player win!",
+      "category": "Racing",
+      "rating": 4.0,
+      "embedUrl": "https://www.crazygames.com/embed/getaway-shootout"
+    },
+    {
+      "title": "Soccer Random",
+      "url": "https://www.crazygames.com/game/soccer-random",
+      "thumbnailUrl": "https://imgs.crazygames.com/games/soccer-random/cover_16x9-1732744645362.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "soccer-random",
+      "description": "Soccer Random is a two-player pixel-art soccer game with limited controls but unlimited randomness. Players hop and kick on the pitch with just one click, trying to score a goal with limited movement. You can choose a one-player game against the computer or two-player with a friend as your opponent.",
+      "instructions": "Soccer Random is a two-player pixel-art soccer game with limited controls but unlimited randomness. Players hop and kick on the pitch with just one click, trying to score a goal with limited movement. You can choose a one-player game against the computer or two-player with a friend as your opponent.",
+      "category": "Horror",
+      "rating": 3.8,
+      "embedUrl": "https://www.crazygames.com/embed/soccer-random"
+    },
+    {
+      "title": "Soccer Legends 2021",
+      "url": "https://www.crazygames.com/game/soccer-legends-2021",
+      "thumbnailUrl": "https://imgs.crazygames.com/games/soccer-legends-2021/cover_16x9-1732724179287.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "soccer-legends-2021",
+      "description": "Soccer Legends 2021 is a sports soccer two-player game and the newest installment in the widely popular Soccer Legends series by MadPuffers, bringing the excitement of fast-paced soccer action to the next level. Packed with fresh updates, this game introduces a variety of new players and teams, each with their own unique skills and playing styles. Whether you’re a seasoned fan of the series or a newcomer, Soccer Legends 2021 offers a dynamic and entertaining experience that combines arcade-style gameplay with competitive strategy. Play solo against AI or challenge your friend to a 1-on-1 match!",
+      "instructions": "Soccer Legends 2021 is a sports soccer two-player game and the newest installment in the widely popular Soccer Legends series by MadPuffers, bringing the excitement of fast-paced soccer action to the next level. Packed with fresh updates, this game introduces a variety of new players and teams, each with their own unique skills and playing styles. Whether you’re a seasoned fan of the series or a newcomer, Soccer Legends 2021 offers a dynamic and entertaining experience that combines arcade-style gameplay with competitive strategy. Play solo against AI or challenge your friend to a 1-on-1 match!",
+      "category": "Simulation",
+      "rating": 4.5,
+      "embedUrl": "https://www.crazygames.com/embed/soccer-legends-2021"
+    },
+    {
+      "title": "Penalty Shooters 2",
+      "url": "https://www.crazygames.com/game/penalty-shooters-2",
+      "thumbnailUrl": "https://imgs.crazygames.com/penalty-shooters-2_16x9/20240726040713/penalty-shooters-2_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "penalty-shooters-2",
+      "description": "Penalty Shooters 2 is a soccer game where you shoot penalties in a fantasy league of your choice. Alternate between shooter and goalkeeper in intense penalty shootouts. Win the match to continue in the league and take your shot at becoming the champion.",
+      "instructions": "Penalty Shooters 2 is a soccer game where you shoot penalties in a fantasy league of your choice. Alternate between shooter and goalkeeper in intense penalty shootouts. Win the match to continue in the league and take your shot at becoming the champion.",
+      "category": "Simulation",
+      "rating": 4.1,
+      "embedUrl": "https://www.crazygames.com/embed/penalty-shooters-2"
+    },
+    {
+      "title": "Basketball Stars",
+      "url": "https://www.crazygames.com/game/basketball-stars-2019",
+      "thumbnailUrl": "https://imgs.crazygames.com/games/basketball-stars-2019/cover-1583231506155.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "basketball-stars-2019",
+      "description": "Basketball Stars is a 2-player basketball game created by Madpuffers. Shoot b-ball with the likes of LeBron James, James Harden, and Stephen Curry in Basketball Stars! You can play solo or with a friend as a variety of legendary basketball players.",
+      "instructions": "Basketball Stars is a 2-player basketball game created by Madpuffers. Shoot b-ball with the likes of LeBron James, James Harden, and Stephen Curry in Basketball Stars! You can play solo or with a friend as a variety of legendary basketball players.",
+      "category": "Action",
+      "rating": 3.8,
+      "embedUrl": "https://www.crazygames.com/embed/basketball-stars-2019"
+    },
+    {
+      "title": "Basketball Legends 2020",
+      "url": "https://www.crazygames.com/game/basketball-legends-2020",
+      "thumbnailUrl": "https://imgs.crazygames.com/basketball-legends-2020_16x9/20231122050621/basketball-legends-2020_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "basketball-legends-2020",
+      "description": "Basketball Legends 2020 is the popular sequel to Basketball Stars 2019. This two-player basketball game lets you play as iconic basketball players like James Harden, Luka Doncic, and LeBron James in bobblehead form!",
+      "instructions": "Basketball Legends 2020 is the popular sequel to Basketball Stars 2019. This two-player basketball game lets you play as iconic basketball players like James Harden, Luka Doncic, and LeBron James in bobblehead form!",
+      "category": "Strategy",
+      "rating": 3.4,
+      "embedUrl": "https://www.crazygames.com/embed/basketball-legends-2020"
+    },
+    {
+      "title": "BasketBros",
+      "url": "https://www.crazygames.com/game/basketbros",
+      "thumbnailUrl": "https://imgs.crazygames.com/basketbros_16x9/20250320082607/basketbros_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "basketbros",
+      "description": "BasketBros is a fast-paced basketball game with online and offline gameplay. Choose a basketballer, customize your style, and compete in singleplayer and multiplayer games. Throw down some sick dunks and win the game to earn upgrades and unlockables.",
+      "instructions": "BasketBros is a fast-paced basketball game with online and offline gameplay. Choose a basketballer, customize your style, and compete in singleplayer and multiplayer games. Throw down some sick dunks and win the game to earn upgrades and unlockables.",
+      "category": "Adventure",
+      "rating": 4.3,
+      "embedUrl": "https://www.crazygames.com/embed/basketbros"
+    },
+    {
+      "title": "Return Man 2",
+      "url": "https://www.crazygames.com/game/return-man-2",
+      "thumbnailUrl": "https://imgs.crazygames.com/returnman2.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "return-man-2",
+      "description": "Return Man 2 - become a pro running back! Jump back into the action of American Football games in this second installment of the Return Man series. This fantastic sports game brings a whole host of awesome challenges, levels, and special moves. The retro graphics and fun football gameplay are superb.",
+      "instructions": "Return Man 2 - become a pro running back! Jump back into the action of American Football games in this second installment of the Return Man series. This fantastic sports game brings a whole host of awesome challenges, levels, and special moves. The retro graphics and fun football gameplay are superb.",
+      "category": "Puzzle",
+      "rating": 4.2,
+      "embedUrl": "https://www.crazygames.com/embed/return-man-2"
+    },
+    {
+      "title": "4th and Goal 2019",
+      "url": "https://www.crazygames.com/game/4th-and-goal-2019",
+      "thumbnailUrl": "https://imgs.crazygames.com/4th-and-goal-2019-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "4th-and-goal-2019",
+      "description": "Become a pro quarterback in 4th and Goal 2019. Pick your team and win the championship in the 2019 edition of the famous American football, 4th and Goal! If you love American Football or sports games in general, you will enjoy playing this challenging and accurate game.",
+      "instructions": "Become a pro quarterback in 4th and Goal 2019. Pick your team and win the championship in the 2019 edition of the famous American football, 4th and Goal! If you love American Football or sports games in general, you will enjoy playing this challenging and accurate game.",
+      "category": "Racing",
+      "rating": 4.2,
+      "embedUrl": "https://www.crazygames.com/embed/4th-and-goal-2019"
+    },
+    {
+      "title": "Wrestle Bros",
+      "url": "https://www.crazygames.com/game/wrestle-bros",
+      "thumbnailUrl": "https://imgs.crazygames.com/wrestle-bros_16x9/20250320082313/wrestle-bros_16x9-cover?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "wrestle-bros",
+      "description": "Wrestle Bros is a pro wrestling sports action game where you can body slam your way to victory in the championships as your favorite character. Unleash a flurry of wrestling moves on your opponents, from aerial assaults to bone-crushing body slams. Get ready to dominate the ring and claim the championship, bro!",
+      "instructions": "Wrestle Bros is a pro wrestling sports action game where you can body slam your way to victory in the championships as your favorite character. Unleash a flurry of wrestling moves on your opponents, from aerial assaults to bone-crushing body slams. Get ready to dominate the ring and claim the championship, bro!",
+      "category": "Horror",
+      "rating": 5.0,
+      "embedUrl": "https://www.crazygames.com/embed/wrestle-bros"
+    },
+    {
+      "title": "Swords and Sandals 2",
+      "url": "https://www.crazygames.com/game/swords-and-sandals-2",
+      "thumbnailUrl": "https://imgs.crazygames.com/swordsandsandals2.png?metadata=none&quality=40&width=1200&height=630&fit=crop",
+      "id": "swords-and-sandals-2",
+      "description": "Swords and Sandals 2 is an action-turn-based gladiator game with RPG elements. This second installment marks the return of this classic gladiator battle game! Create your character, buy battle gear, and fight for gold or your life in the arena.",
+      "instructions": "Swords and Sandals 2 is an action-turn-based gladiator game with RPG elements. This second installment marks the return of this classic gladiator battle game! Create your character, buy battle gear, and fight for gold or your life in the arena.",
+      "category": "Horror",
+      "rating": 4.2,
+      "embedUrl": "https://www.crazygames.com/embed/swords-and-sandals-2"
+    }
+  ]
+}
