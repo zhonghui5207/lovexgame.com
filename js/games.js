@@ -31,15 +31,47 @@ async function loadGamesFromStorage() {
     await checkAndUpdateGames();
   }
   
-  // Categorize games based on status
-  featuredGames = allGames.filter(game => game.status === 'Featured' || game.isFeatured);
-  newGames = allGames.filter(game => game.status === 'New' || game.isNew);
+  // 根据评分和时间对游戏进行分类
+  const now = new Date();
+  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   
-  // Other games as popular games
-  popularGames = allGames.filter(game => 
-    (!game.status || (game.status !== 'Featured' && game.status !== 'New')) && 
-    !game.isFeatured && !game.isNew
+  // 推荐游戏：评分高于4.5或标记为Featured
+  featuredGames = allGames.filter(game => 
+    game.status === 'Featured' || 
+    game.isFeatured || 
+    (game.rating && game.rating >= 4.5)
   );
+  
+  // 如果推荐游戏不足，从高评分游戏中补充
+  if (featuredGames.length < 2) {
+    const highRatedGames = allGames
+      .filter(game => !featuredGames.includes(game))
+      .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+      .slice(0, 2 - featuredGames.length);
+    featuredGames = [...featuredGames, ...highRatedGames];
+  }
+  
+  // 新游戏：一周内添加的或标记为New
+  newGames = allGames.filter(game => {
+    const isNew = game.status === 'New' || game.isNew;
+    const isRecent = game.addedDate && new Date(game.addedDate) > oneWeekAgo;
+    return isNew || isRecent;
+  });
+  
+  // 流行游戏：其他所有游戏，按评分排序
+  popularGames = allGames
+    .filter(game => !featuredGames.includes(game) && !newGames.includes(game))
+    .sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  
+  // 确保每个游戏都有正确的标记
+  allGames = allGames.map(game => ({
+    ...game,
+    isNew: newGames.includes(game),
+    isFeatured: featuredGames.includes(game)
+  }));
+  
+  // 保存更新后的游戏数据
+  localStorage.setItem(STORAGE_KEYS.GAMES, JSON.stringify(allGames));
 }
 
 // Load games data from games_for_import.json
@@ -65,10 +97,44 @@ async function loadGamesFromImportFile() {
     localStorage.setItem(STORAGE_KEYS.GAMES, JSON.stringify(allGames));
     localStorage.setItem(STORAGE_KEYS.UPDATE_ID, importGames.updateId);
     
-    // Categorize games based on status
-    featuredGames = allGames.slice(0, 3); // First 3 as featured games
-    newGames = allGames.slice(3, 8); // Next 5 as new games
-    popularGames = allGames.slice(8); // Remaining as popular games
+    // 根据评分和时间对游戏进行分类
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    // 推荐游戏：评分高于4.5或标记为Featured
+    featuredGames = allGames.filter(game => 
+      game.status === 'Featured' || 
+      game.isFeatured || 
+      (game.rating && game.rating >= 4.5)
+    );
+    
+    // 如果推荐游戏不足，从高评分游戏中补充
+    if (featuredGames.length < 2) {
+      const highRatedGames = allGames
+        .filter(game => !featuredGames.includes(game))
+        .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        .slice(0, 2 - featuredGames.length);
+      featuredGames = [...featuredGames, ...highRatedGames];
+    }
+    
+    // 新游戏：一周内添加的或标记为New
+    newGames = allGames.filter(game => {
+      const isNew = game.status === 'New' || game.isNew;
+      const isRecent = game.addedDate && new Date(game.addedDate) > oneWeekAgo;
+      return isNew || isRecent;
+    });
+    
+    // 流行游戏：其他所有游戏，按评分排序
+    popularGames = allGames
+      .filter(game => !featuredGames.includes(game) && !newGames.includes(game))
+      .sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    
+    // 确保每个游戏都有正确的标记
+    allGames = allGames.map(game => ({
+      ...game,
+      isNew: newGames.includes(game),
+      isFeatured: featuredGames.includes(game)
+    }));
     
     // Reload games on the page
     if (document.getElementById('featured-games') || 
@@ -340,25 +406,54 @@ function createGameCard(game) {
   const card = document.createElement('div');
   card.className = 'game-card';
   
-  // Default thumbnail if not provided
-  const thumbnailUrl = game.thumbnailUrl || `https://placehold.co/300x200/1a1b26/ffffff?text=${encodeURIComponent(game.title)}`;
+  // 添加游戏标记（Featured/New）
+  if (game.isFeatured || game.status === 'Featured' || (game.rating && game.rating >= 4.5)) {
+    const badge = document.createElement('div');
+    badge.className = 'game-badge featured';
+    badge.textContent = 'Featured';
+    card.appendChild(badge);
+  } else if (game.isNew || game.status === 'New' || isRecentlyAdded(game)) {
+    const badge = document.createElement('div');
+    badge.className = 'game-badge new';
+    badge.textContent = 'New';
+    card.appendChild(badge);
+  }
   
-  card.innerHTML = `
-    <div class="game-thumbnail">
-      <img src="${thumbnailUrl}" alt="${game.title}">
-      ${game.isNew ? '<span class="game-badge">NEW</span>' : ''}
-      ${game.isFeatured ? '<span class="game-badge">FEATURED</span>' : ''}
-    </div>
-    <div class="game-info">
-      <h3 class="game-title">${game.title}</h3>
-      <p class="game-category">${game.category}</p>
-    </div>
-  `;
+  // 缩略图容器
+  const thumb = document.createElement('div');
+  thumb.className = 'game-thumb';
   
-  card.addEventListener('click', function() {
-    // Always open game details page, regardless of game source
+  // 缩略图
+  const img = document.createElement('img');
+  img.src = game.thumbnailUrl || `https://placehold.co/400x300/1a1b26/ffffff?text=${encodeURIComponent(game.title)}`;
+  img.alt = game.title;
+  img.loading = 'lazy';
+  thumb.appendChild(img);
+  
+  // 游戏信息
+  const info = document.createElement('div');
+  info.className = 'game-info';
+  
+  const title = document.createElement('h3');
+  title.className = 'game-title';
+  title.textContent = game.title;
+  
+  const category = document.createElement('div');
+  category.className = 'game-category';
+  category.setAttribute('data-category', game.category.toLowerCase());
+  category.textContent = game.category;
+  
+  info.appendChild(title);
+  info.appendChild(category);
+  
+  // 添加点击事件
+  card.addEventListener('click', () => {
     window.location.href = `game.html?id=${game.id}`;
   });
+  
+  // 组装卡片
+  card.appendChild(thumb);
+  card.appendChild(info);
   
   return card;
 }
@@ -641,9 +736,21 @@ function loadRelatedGames(currentGame) {
   const relatedGamesContainer = document.getElementById('related-games-container');
   if (!relatedGamesContainer) return;
   
-  const relatedGames = allGames
-    .filter(game => game.category === currentGame.category && game.id !== currentGame.id)
-    .slice(0, 5); // Limit to 5 related games
+  // 清空容器
+  relatedGamesContainer.innerHTML = '';
+  
+  // 获取相关游戏，确保不重复
+  const relatedGames = Array.from(new Set(
+    allGames
+      .filter(game => 
+        // 同类别游戏
+        game.category === currentGame.category && 
+        // 排除当前游戏
+        game.id !== currentGame.id &&
+        // 排除重复游戏（基于URL）
+        !relatedGamesContainer.querySelector(`[data-url="${game.url}"]`)
+      )
+  )).slice(0, 5); // 限制5个相关游戏
   
   if (relatedGames.length === 0) {
     relatedGamesContainer.innerHTML = '<p>No related games found.</p>';
@@ -653,12 +760,13 @@ function loadRelatedGames(currentGame) {
   relatedGames.forEach(game => {
     const relatedGameCard = document.createElement('div');
     relatedGameCard.className = 'related-game-card';
+    relatedGameCard.setAttribute('data-url', game.url); // 添加URL属性用于去重
     
     const thumbnailUrl = game.thumbnailUrl || `https://placehold.co/80x60/1a1b26/ffffff?text=${encodeURIComponent(game.title)}`;
     
     relatedGameCard.innerHTML = `
       <div class="related-game-thumb">
-        <img src="${thumbnailUrl}" alt="${game.title}">
+        <img src="${thumbnailUrl}" alt="${game.title}" loading="lazy">
       </div>
       <div class="related-game-info">
         <h3 class="related-game-title">${game.title}</h3>
@@ -775,4 +883,12 @@ function createErrorMessage(container, game) {
       <button class="open-new-tab-btn" onclick="window.open('${game.embedUrl}', '_blank')">Open in New Tab</button>
     </div>
   `;
+}
+
+// 检查游戏是否是最近添加的（一周内）
+function isRecentlyAdded(game) {
+  if (!game.addedDate) return false;
+  const now = new Date();
+  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  return new Date(game.addedDate) > oneWeekAgo;
 }

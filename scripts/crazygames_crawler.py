@@ -256,7 +256,7 @@ class CrazyGamesCrawler:
         # 提取游戏详情
         description_selectors = ['.game-description', '.description', 'meta[name="description"]', 'meta[property="og:description"]']
         instructions_selectors = ['.game-instructions', '.instructions', '.how-to-play']
-        category_selectors = ['.game-info-category a', '.category a', '.game-category']
+        category_selectors = ['.game-info-category a', '.category a', '.game-category', '.game-tags a']
         
         # 尝试多个选择器获取描述
         description = ''
@@ -282,11 +282,22 @@ class CrazyGamesCrawler:
         # 尝试多个选择器获取分类
         category = ''
         for selector in category_selectors:
-            element = soup.select_one(selector)
-            if element:
-                category = element.get_text(strip=True)
-                if category:
+            elements = soup.select(selector)  # 获取所有匹配的元素
+            for element in elements:
+                category_text = element.get_text(strip=True)
+                if category_text and category_text.lower() in self.get_predefined_categories():
+                    category = category_text
                     break
+            if category:
+                break
+        
+        # 如果没有找到有效分类，使用默认分类
+        if not category:
+            # 根据游戏标题或描述推断分类
+            category = self.guess_category(url, description)
+        
+        # 确保分类首字母大写
+        category = category.capitalize()
         
         # 提取评分
         rating_selectors = ['.game-rating-value', '.rating-value', '.rating']
@@ -302,8 +313,15 @@ class CrazyGamesCrawler:
                     else:
                         rating = float(rating_text)
                     break
-                except ValueError:
+                except (ValueError, TypeError):
                     continue
+        
+        # 如果没有评分，设置默认评分
+        if not rating:
+            rating = 3.5
+        
+        # 确保评分在1-5之间
+        rating = max(1.0, min(5.0, rating))
         
         # 提取嵌入URL
         embed_url = self._get_embed_url(soup, url)
@@ -323,14 +341,48 @@ class CrazyGamesCrawler:
         
         return {
             'id': game_id,
-            'description': description,
-            'instructions': instructions,
+            'description': description or f"Play {url.split('/')[-1].replace('-', ' ').title()} online for free!",
+            'instructions': instructions or "Use your mouse and keyboard to play the game.",
             'category': category,
             'rating': rating,
             'embedUrl': embed_url,
             'thumbnailUrl': thumbnail_url,
             **game_data
         }
+    
+    def get_predefined_categories(self):
+        """获取预定义的游戏分类"""
+        return {
+            'action', 'adventure', 'arcade', 'puzzle', 'racing', 
+            'sports', 'strategy', 'shooting', 'horror', 'simulation'
+        }
+    
+    def guess_category(self, url, description):
+        """根据URL和描述推断游戏分类"""
+        text = f"{url} {description}".lower()
+        
+        # 分类关键词映射
+        category_keywords = {
+            'action': ['action', 'fight', 'battle', 'combat', 'shoot'],
+            'adventure': ['adventure', 'explore', 'quest', 'journey'],
+            'arcade': ['arcade', 'classic', 'retro'],
+            'puzzle': ['puzzle', 'match', 'solve', 'brain'],
+            'racing': ['racing', 'drive', 'car', 'speed', 'drift'],
+            'sports': ['sports', 'football', 'basketball', 'soccer'],
+            'strategy': ['strategy', 'build', 'manage', 'tower'],
+            'shooting': ['shooting', 'shooter', 'gun', 'fps'],
+            'horror': ['horror', 'scary', 'survival', 'zombie'],
+            'simulation': ['simulation', 'simulator', 'realistic']
+        }
+        
+        # 计算每个分类的匹配度
+        matches = {}
+        for category, keywords in category_keywords.items():
+            matches[category] = sum(1 for keyword in keywords if keyword in text)
+        
+        # 返回匹配度最高的分类，如果没有匹配则返回 'Action'
+        best_category = max(matches.items(), key=lambda x: x[1])[0] if any(matches.values()) else 'Action'
+        return best_category.capitalize()
     
     def _extract_game_data_from_scripts(self, soup):
         """从页面脚本中提取游戏数据"""
@@ -399,6 +451,44 @@ class CrazyGamesCrawler:
             'embedUrl': url
         }
     
+    def _convert_to_site_format(self, game):
+        """将爬取的游戏数据转换为网站使用的格式"""
+        # 生成游戏ID
+        game_id = game.get('id') or re.sub(r'[^a-z0-9-]', '-', game.get('title', '').lower())
+        
+        # 获取游戏分类
+        category = game.get('category', 'Action')
+        if isinstance(category, list) and category:
+            category = category[0]
+        
+        # 确保评分在1-5之间
+        rating = float(game.get('rating', 0))
+        rating = max(1.0, min(5.0, rating))
+        
+        # 获取当前时间戳
+        now = datetime.now()
+        
+        # 转换为网站格式
+        site_format = {
+            'title': game.get('title', ''),
+            'url': game.get('url', ''),
+            'thumbnailUrl': game.get('thumbnailUrl', ''),
+            'id': game_id,
+            'description': game.get('description', ''),
+            'instructions': game.get('instructions', ''),
+            'category': category,
+            'rating': rating,
+            'embedUrl': game.get('embedUrl', ''),
+            # 添加状态标记
+            'isNew': True,  # 新爬取的游戏默认标记为新游戏
+            'isFeatured': rating >= 4.5,  # 评分高的游戏标记为推荐
+            'status': 'New',  # 状态标记为新游戏
+            'addedDate': now.isoformat(),  # 添加时间戳
+            'lastUpdated': now.isoformat()  # 最后更新时间
+        }
+        
+        return site_format
+    
     def export_to_json(self, games):
         """导出游戏数据到JSON文件，适合网站导入"""
         if not games:
@@ -431,73 +521,6 @@ class CrazyGamesCrawler:
             import traceback
             self.log(traceback.format_exc(), 'ERROR')
             return False
-    
-    def _convert_to_site_format(self, game):
-        """将游戏数据转换为网站格式"""
-        # 确保缩略图URL是有效的
-        thumbnail_url = game.get('thumbnailUrl', '')
-        if not thumbnail_url:
-            # 生成占位图URL
-            title = game.get('title', 'Game')
-            thumbnail_url = f"https://placehold.co/600x400/1a1b26/ffffff?text={title.replace(' ', '+')}"
-        
-        # 确保嵌入URL是有效的
-        embed_url = game.get('embedUrl', '')
-        if not embed_url or embed_url == game.get('url', ''):
-            # 尝试从游戏URL构造嵌入URL
-            game_url = game.get('url', '')
-            if 'crazygames.com' in game_url:
-                game_slug = game_url.split('/')[-1]
-                embed_url = f"https://www.crazygames.com/embed/{game_slug}"
-            else:
-                embed_url = game_url
-        
-        # 确保description有值
-        description = game.get('description', '')
-        if not description:
-            description = f"Play {game.get('title', 'this game')} online for free. No download required."
-        
-        # 确保instructions有值，如果为空则使用description
-        instructions = game.get('instructions', '')
-        if not instructions:
-            instructions = description
-        
-        # 确保category有值，如果为空则从预定义分类中随机选择一个
-        category = game.get('category', '')
-        if not category:
-            # 预定义的游戏分类（首字母大写）
-            categories = ['Action', 'Adventure', 'Puzzle', 'Strategy', 'Sports', 'Racing', 'Simulation', 'Horror']
-            category = random.choice(categories)
-        else:
-            # 确保分类名称首字母大写
-            category = category.capitalize()
-        
-        # 确保rating有值，如果为空则生成一个3.0到5.0之间的随机值
-        rating = game.get('rating', 0)
-        if not rating:
-            rating = round(random.uniform(3.0, 5.0), 1)
-        
-        # 确保id有值
-        game_id = game.get('id', '')
-        if not game_id:
-            # 从URL或标题生成ID
-            if game.get('url', ''):
-                game_id = game.get('url', '').split('/')[-1]
-            else:
-                game_id = game.get('title', '').lower().replace(' ', '-')
-        
-        site_game = {
-            'title': game.get('title', ''),
-            'url': game.get('url', ''),
-            'thumbnailUrl': thumbnail_url,
-            'id': game_id,
-            'description': description,
-            'instructions': instructions,
-            'category': category,
-            'rating': rating,
-            'embedUrl': embed_url
-        }
-        return site_game
     
     def export_to_excel(self, games):
         """将游戏数据导出到Excel文件"""
